@@ -30,4 +30,4 @@ jobs:
         echo test, and deploy your project.
     - uses: montudor/action-zip@v0.1.0
       with:
-        args: zip -qq -r ./SchedulerFunctions.zip ./python
+        args: zip -r SchedulerFunctions.zip python/
