@@ -28,3 +28,6 @@ jobs:
       run: |
         echo Add other actions to build,
         echo test, and deploy your project.
+    - uses: montudor/action-zip@v0.1.0
+      with:
+        args: zip -qq -r ./SchedulerFunctions.zip ./python
