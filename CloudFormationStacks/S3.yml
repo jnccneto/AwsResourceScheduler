@@ -1,0 +1,36 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Description: "S3 DashBoard"
+
+Resources:
+ DashBoardBucket:
+     Type: AWS::S3::Bucket
+     Properties: 
+       AccessControl: PublicRead
+       WebsiteConfiguration:
+         IndexDocument: index.html
+       CorsConfiguration:
+         CorsRules:
+         - AllowedHeaders: ['*']
+           AllowedMethods: [GET]
+           AllowedOrigins: ['*']
+           Id: myCORSRuleId1
+           MaxAge: '3600'       
+ CodeSourceBucket:
+      Type: AWS::S3::Bucket
+                          
+Outputs:
+  WebsiteURL:
+    Value: !GetAtt [DashBoardBucket, WebsiteURL]
+    Description: URL for website hosted on S3
+    Export:
+     Name: CodeSourceBucketURL
+  WebS3:
+    Value: !GetAtt [DashBoardBucket, Arn]
+    Description: URL for website hosted on S3
+    Export:
+     Name: DashBoardBucketARN 
+  CodeS3:
+    Value: !GetAtt [CodeSourceBucket, Arn]
+    Description: CodeSourceBucket ARN
+    Export:
+     Name: CodeSourceBucketARN        
