@@ -42,9 +42,10 @@ jobs:
     - name: Copy files to S3 with the AWS CLI
       run: |
         ARN=$(aws cloudformation list-exports --query "Exports[?Name=='CodeSourceBucketARN'].Value" --no-paginate --output text )
-        aws s3 cp SchedulerCheckAndApply.zip s3://s3-codesourcebucket-awrw03vd22r1
-        aws s3 cp ResourcesApi.zip s3://s3-codesourcebucket-awrw03vd22r1
-        aws s3 cp SchedulerFunctions.zip s3://s3-codesourcebucket-awrw03vd22r1
+        BucketName=$(aws cloudformation list-exports --query "Exports[?Name=='CodeSourceBucketARN'].Value" --no-paginate --output text | sed 's/arn:aws:s3::://')
+        aws s3 cp SchedulerCheckAndApply.zip s3://$BucketName
+        aws s3 cp ResourcesApi.zip s3://$BucketName
+        aws s3 cp SchedulerFunctions.zip s3://$BucketName
         
         
         
