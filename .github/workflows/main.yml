@@ -40,5 +40,5 @@ jobs:
     - name: Deploy to S3 AWS CloudFormation
       uses: aws-actions/aws-cloudformation-github-deploy@v1
       with:
-          name: CloudFormationStacks/S3.yml
+          name: S3
           template: CloudFormationStacks/S3.yml
