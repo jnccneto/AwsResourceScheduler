@@ -18,27 +18,15 @@ jobs:
     steps:
     # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
     - uses: actions/checkout@v2
-    - uses: montudor/action-zip@v0.1.0
-      with:
-        args: zip ResourcesApi.zip ResourcesApi.py 
-    - uses: actions/checkout@v2                     
-      uses: thedoctor0/zip-release@master
+    - uses: thedoctor0/zip-release@master
       with:
          filename: 'release.zip'
          exclusions: '*.git*'
-    - uses: actions/checkout@v2                     
     - uses: montudor/action-zip@v0.1.0
       with:
          args: zip ResourcesApi.zip ResourcesApi.py 
-
-    - uses: actions/checkout@v2                     
-    - uses: montudor/action-zip@v0.1.0
-      with:
-          args: zip ResourcesApi.zip ResourcesApi.py 
-    
     - name: Deploy to AWS CloudFormation
       uses: aws-actions/aws-cloudformation-github-deploy@v1
       with:
           name: CloudFormationStacks/S3.yml
           template: CloudFormationStacks/S3.yml
-
