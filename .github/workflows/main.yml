@@ -16,16 +16,28 @@ jobs:
 
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
-    # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
-    - uses: actions/checkout@v2
-    - uses: thedoctor0/zip-release@master
+    
+    - name: Configure AWS Credentials
+      uses: aws-actions/configure-aws-credentials@v1
       with:
-         filename: 'release.zip'
-         exclusions: '*.git*'
+        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        aws-region: eu-west-1
+        
+    
+    - uses: actions/checkout@v2
+    - uses: montudor/action-zip@v0.1.0
+      with:
+         args: zip -r SchedulerFunctions.zip python/
     - uses: montudor/action-zip@v0.1.0
       with:
          args: zip ResourcesApi.zip ResourcesApi.py 
-    - name: Deploy to AWS CloudFormation
+    - uses: montudor/action-zip@v0.1.0
+      with:
+         args: zip SchedulerCheckAndApply.zip SchedulerCheckAndApply.py 
+
+         
+    - name: Deploy to S3 AWS CloudFormation
       uses: aws-actions/aws-cloudformation-github-deploy@v1
       with:
           name: CloudFormationStacks/S3.yml
