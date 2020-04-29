@@ -34,5 +34,15 @@ Outputs:
     Description: CodeSourceBucket ARN
     Export:
      Name: CodeSourceBucketARN        
-
-
+  CodeS3Name:
+    Value: 
+      Ref: CodeSourceBucket
+    Description: CodeSourceBucket Name
+    Export:
+     Name: CodeSourceBucketName    
+  WebS3Name:
+    Value: 
+      Ref: DashBoardBucket
+    Description: DashBoardBucket Name
+    Export:
+     Name: DashBoardBucketName   

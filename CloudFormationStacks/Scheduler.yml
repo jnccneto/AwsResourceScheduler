@@ -96,7 +96,7 @@ Resources:
       - python3.7
     Content:
       S3Bucket: 
-       Fn::ImportValue: CodeSourceBucketARN       
+       Fn::ImportValue: CodeSourceBucketName       
       S3Key: SchedulerFunctions.zip
     Description: SchedulerFunctions
     LayerName: SchedulerFunctionsLayer
@@ -107,7 +107,7 @@ Resources:
    Properties:
      Code:
       S3Bucket: 
-       Fn::ImportValue: CodeSourceBucketARN       
+       Fn::ImportValue: CodeSourceBucketName       
       S3Key: "ResourcesApi.zip"
      Description: "ResourcesApi LAMBDA"
      Runtime: "python3.7"
@@ -123,7 +123,7 @@ Resources:
    Properties:
      Code:
       S3Bucket: 
-       Fn::ImportValue: CodeSourceBucketARN       
+       Fn::ImportValue: CodeSourceBucketName       
       S3Key: "SchedulerCheckAndApply.zip"
      Description: "SchedulerCheckAndApply LAMBDA"
      Runtime: "python3.7"
@@ -394,9 +394,6 @@ Outputs:
    Value: !Ref UserPoolClient     
   JsSDK:
     Value: !Sub "aws apigateway get-sdk --rest-api-id ${apiGateway} --stage-name Prod --sdk-type javascript API_SDK.zip"
-  WebsiteURL:
-    Value: !GetAtt [DashBoardBucket, WebsiteURL]
-    Description: URL for website hosted on S3
   SchedulerFunctionsLayer:
     Value: !Ref SchedulerFunctionsLayer
     Description: SchedulerFunctionsLayer ARN
