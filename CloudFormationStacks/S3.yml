@@ -30,7 +30,9 @@ Outputs:
     Export:
      Name: DashBoardBucketARN 
   CodeS3:
-    Value: !GetAtt [CodeSourceBucket, Arn]
-    Description: CodeSourceBucket ARN
+    Value: !GetAtt [CodeSourceBucket, RegionalDomainName]
+    Description: CodeSourceBucket RegionalDomainName
     Export:
-     Name: CodeSourceBucketARN        
+     Name: CodeSourceBucketRegionalDomainName        
+
+
