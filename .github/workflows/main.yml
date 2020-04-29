@@ -41,6 +41,11 @@ jobs:
       run: aws cloudformation deploy  --stack-name S3 --template-file CloudFormationStacks/S3.yml --no-fail-on-empty-changeset
     - name: Copy files to S3 with the AWS CLI
       run: |
+        ARN=$(aws cloudformation list-exports --query "Exports[?Name=='CodeSourceBucketARN'].Value" --no-paginate --output text )
         aws s3 cp SchedulerCheckAndApply.zip s3://s3-codesourcebucket-awrw03vd22r1
         aws s3 cp ResourcesApi.zip s3://s3-codesourcebucket-awrw03vd22r1
         aws s3 cp SchedulerFunctions.zip s3://s3-codesourcebucket-awrw03vd22r1
+        
+        
+        
+
