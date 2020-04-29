@@ -38,9 +38,7 @@ jobs:
 
     - name: Copy files to S3 with the AWS CLI
       run: |
-        aws s3 sync . s3://s3-codesourcebucket-awrw03vd22r1
-    - name: Deploy to S3 AWS CloudFormation
-      uses: aws-actions/aws-cloudformation-github-deploy@v1
-      with:
-          name: S3
-          template: CloudFormationStacks/S3.yml
+        aws s3 cp SchedulerCheckAndApply.zip s3://s3-codesourcebucket-awrw03vd22r1
+        aws s3 cp ResourcesApi.zip s3://s3-codesourcebucket-awrw03vd22r1
+        aws s3 cp SchedulerFunctions.zip s3://s3-codesourcebucket-awrw03vd22r1
+        aws s3 cloudformation deploy  --stack-name S3 --template-file CloudFormationStacks/S3.yml
