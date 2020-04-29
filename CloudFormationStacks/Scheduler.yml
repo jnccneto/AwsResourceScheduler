@@ -397,7 +397,19 @@ Outputs:
   WebsiteURL:
     Value: !GetAtt [DashBoardBucket, WebsiteURL]
     Description: URL for website hosted on S3
-   
-    
-    
+  SchedulerFunctionsLayer:
+    Value: !Ref SchedulerFunctionsLayer
+    Description: SchedulerFunctionsLayer ARN
+    Export:
+     Name: SchedulerFunctionsLayerARN        
+  ResourcesApi:
+    Value: !Ref ResourcesApi
+    Description: ResourcesApi ARN
+    Export:
+     Name: ResourcesApiARN  
+  SchedulerCheckAndApply:
+    Value: !Ref SchedulerCheckAndApply
+    Description: SchedulerCheckAndApply ARN
+    Export:
+     Name: SchedulerCheckAndApplyARN           
     
