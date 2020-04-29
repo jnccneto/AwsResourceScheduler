@@ -36,7 +36,9 @@ jobs:
       with:
          args: zip SchedulerCheckAndApply.zip SchedulerCheckAndApply.py 
 
-         
+    - name: Copy files to S3 with the AWS CLI
+      run: |
+        aws s3 sync . s3://s3-codesourcebucket-awrw03vd22r1
     - name: Deploy to S3 AWS CloudFormation
       uses: aws-actions/aws-cloudformation-github-deploy@v1
       with:
