@@ -17,14 +17,7 @@ jobs:
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
     
-    - name: Configure AWS Credentials
-      uses: aws-actions/configure-aws-credentials@v1
-      with:
-        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-        aws-region: eu-west-1
-        
-    
+
     - uses: actions/checkout@v2
     - uses: montudor/action-zip@v0.1.0
       with:
@@ -35,10 +28,19 @@ jobs:
     - uses: montudor/action-zip@v0.1.0
       with:
          args: zip SchedulerCheckAndApply.zip SchedulerCheckAndApply.py 
-
+         
+         
+    - name: Configure AWS Credentials
+      uses: aws-actions/configure-aws-credentials@v1
+      with:
+        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        aws-region: eu-west-1
+        
+    - name: CloudFormation 
+      run: aws cloudformation deploy  --stack-name S3 --template-file CloudFormationStacks/S3.yml --no-fail-on-empty-changeset
     - name: Copy files to S3 with the AWS CLI
       run: |
         aws s3 cp SchedulerCheckAndApply.zip s3://s3-codesourcebucket-awrw03vd22r1
         aws s3 cp ResourcesApi.zip s3://s3-codesourcebucket-awrw03vd22r1
         aws s3 cp SchedulerFunctions.zip s3://s3-codesourcebucket-awrw03vd22r1
-        aws cloudformation deploy  --stack-name S3 --template-file CloudFormationStacks/S3.yml --no-fail-on-empty-changeset
