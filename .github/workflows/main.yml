@@ -40,7 +40,7 @@ jobs:
     - name: CloudFormation Deploy Stacks
       run: | 
         aws cloudformation deploy  --stack-name S3 --template-file CloudFormationStacks/S3.yml --no-fail-on-empty-changeset
-        aws cloudformation deploy  --stack-name Scheduler --template-file CloudFormationStacks/Scheduler.yml --no-fail-on-empty-changeset
+        aws cloudformation deploy  --stack-name Scheduler --template-file CloudFormationStacks/Scheduler.yml --no-fail-on-empty-changeset --capabilities CAPABILITY_NAMED_IAM
     - name: Copy files to S3 with the AWS CLI
       run: |
         ARN=$(aws cloudformation list-exports --query "Exports[?Name=='CodeSourceBucketARN'].Value" --no-paginate --output text )
@@ -57,7 +57,9 @@ jobs:
         echo "LayerName: ${LayerName}"
         NewVersionNumber=$(aws lambda publish-layer-version --layer-name $LayerName --zip-file fileb://SchedulerFunctions.zip --compatible-runtimes python3.6 python3.7 | awk '/"Version":/ {print $2}' | sed 's/,//')
         echo "NewVersionNumber: ${NewVersionNumber}"
+        aws lambda update-function-code --function-name ResourcesApi --s3-bucket $BucketName --s3-key ResourcesApi.zip
+        aws lambda update-function-code --function-name SchedulerCheckAndApply --s3-bucket $BucketName --s3-key fileb://SchedulerCheckAndApply.zip
         aws lambda update-function-configuration --function-name SchedulerCheckAndApply --layers "arn:aws:lambda:eu-west-1:809572216788:layer:ResourcesFunctionsforScheduler:${NewVersionNumber}"
-        aws lambda update-function-configuration --function-name ApiTest --layers "arn:aws:lambda:eu-west-1:809572216788:layer:ResourcesFunctionsforScheduler:${NewVersionNumber}"
+        aws lambda update-function-configuration --function-name ResourcesApi --layers "arn:aws:lambda:eu-west-1:809572216788:layer:ResourcesFunctionsforScheduler:${NewVersionNumber}"
 
 
