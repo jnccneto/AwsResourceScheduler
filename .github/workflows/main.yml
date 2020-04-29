@@ -41,4 +41,4 @@ jobs:
         aws s3 cp SchedulerCheckAndApply.zip s3://s3-codesourcebucket-awrw03vd22r1
         aws s3 cp ResourcesApi.zip s3://s3-codesourcebucket-awrw03vd22r1
         aws s3 cp SchedulerFunctions.zip s3://s3-codesourcebucket-awrw03vd22r1
-        aws cloudformation deploy  --stack-name S3 --template-file CloudFormationStacks/S3.yml
+        aws cloudformation deploy  --stack-name S3 --template-file CloudFormationStacks/S3.yml --no-fail-on-empty-changeset
