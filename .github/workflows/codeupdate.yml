@@ -7,6 +7,7 @@ on:
     - '*'
     paths:
     - '**.py'
+    - README.md
 jobs:
   updatecode:
     runs-on: ubuntu-latest
