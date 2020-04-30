@@ -49,7 +49,7 @@ jobs:
         echo "NewVersionNumber: ${NewVersionNumber}"
         aws lambda update-function-code --function-name ResourcesApi --s3-bucket $BucketName --s3-key ResourcesApi.zip
         aws lambda update-function-code --function-name SchedulerCheckAndApply --s3-bucket $BucketName --s3-key SchedulerCheckAndApply.zip
-        aws lambda update-function-configuration --function-name SchedulerCheckAndApply --layers "arn:aws:lambda:eu-west-1:809572216788:layer:ResourcesFunctionsforScheduler:${NewVersionNumber}"
-        aws lambda update-function-configuration --function-name ResourcesApi --layers "arn:aws:lambda:eu-west-1:809572216788:layer:ResourcesFunctionsforScheduler:${NewVersionNumber}"
+        aws lambda update-function-configuration --function-name SchedulerCheckAndApply --layers "$LayerArn:${NewVersionNumber}"
+        aws lambda update-function-configuration --function-name ResourcesApi --layers "$LayerArn:${NewVersionNumber}"
 
 
