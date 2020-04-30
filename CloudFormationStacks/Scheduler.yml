@@ -387,11 +387,17 @@ Outputs:
      - "https://${apiGateway}.execute-api.${AWS::Region}.amazonaws.com/${Deployment}/list"
      - Deployment: !Ref apiGatewayStageProd
   apiGatewayID:
-   Value: !Ref apiGateway   
+   Value: !Ref apiGateway 
+   Export:
+     Name: apiGatewayID    
   cognitoUserPoolID:
    Value: !Ref cognitoUserPool      
+   Export:
+     Name: cognitoUserPoolID     
   UserPoolClientId:
    Value: !Ref UserPoolClient     
+   Export:
+     Name: UserPoolClientId     
   JsSDK:
     Value: !Sub "aws apigateway get-sdk --rest-api-id ${apiGateway} --stage-name Prod --sdk-type javascript API_SDK.zip"
   SchedulerFunctionsLayer:
