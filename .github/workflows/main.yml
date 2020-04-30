@@ -37,10 +37,9 @@ jobs:
         aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
         aws-region: eu-west-1
         
-    - name: CloudFormation Deploy Stacks
+    - name: CloudFormation Deploy S3 Stacks
       run: | 
         aws cloudformation deploy  --stack-name S3 --template-file CloudFormationStacks/S3.yml --no-fail-on-empty-changeset
-        aws cloudformation deploy  --stack-name Scheduler --template-file CloudFormationStacks/Scheduler.yml --no-fail-on-empty-changeset --capabilities CAPABILITY_NAMED_IAM
     - name: Copy files to S3 with the AWS CLI
       run: |
         ARN=$(aws cloudformation list-exports --query "Exports[?Name=='CodeSourceBucketARN'].Value" --no-paginate --output text )
@@ -49,8 +48,11 @@ jobs:
         aws s3 cp SchedulerCheckAndApply.zip s3://$BucketName
         aws s3 cp ResourcesApi.zip s3://$BucketName
         aws s3 cp SchedulerFunctions.zip s3://$BucketName
-    - name: lambda update
-      run: |
+    - name: CloudFormation Deploy Scheduler Stack
+      run: | 
+        aws cloudformation deploy  --stack-name Scheduler --template-file CloudFormationStacks/Scheduler.yml --no-fail-on-empty-changeset --capabilities CAPABILITY_NAMED_IAM
+    - name: lambda code update
+      run: |     
         LayerArn=$(aws cloudformation list-exports --query "Exports[?Name=='SchedulerFunctionsLayerARN'].Value" --no-paginate --output text )
         echo "LayerArn: ${LayerArn}"
         LayerName=$(echo $LayerArn | cut --fields=7 --delimiter=: )
