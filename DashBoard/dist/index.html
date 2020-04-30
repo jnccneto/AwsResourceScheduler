@@ -1,0 +1,421 @@
+<!doctype html>
+<html>
+  <head>
+    <title>CognitoTEST</title>
+    
+  </head>
+  <body>
+	  
+	  
+	  	<script type="text/javascript" src="ApiGwJs/CognitoAccess/apiGateway-js-sdk/lib/axios/dist/axios.standalone.js"></script>
+		<script type="text/javascript" src="ApiGwJs/CognitoAccess/apiGateway-js-sdk/lib/CryptoJS/rollups/hmac-sha256.js"></script>
+		<script type="text/javascript" src="ApiGwJs/CognitoAccess/apiGateway-js-sdk/lib/CryptoJS/rollups/sha256.js"></script>
+		<script type="text/javascript" src="ApiGwJs/CognitoAccess/apiGateway-js-sdk/lib/CryptoJS/components/hmac.js"></script>
+		<script type="text/javascript" src="ApiGwJs/CognitoAccess/apiGateway-js-sdk/lib/CryptoJS/components/enc-base64.js"></script>
+		<script type="text/javascript" src="ApiGwJs/CognitoAccess/apiGateway-js-sdk/lib/url-template/url-template.js"></script>
+		<script type="text/javascript" src="ApiGwJs/CognitoAccess/apiGateway-js-sdk/lib/apiGatewayCore/sigV4Client.js"></script>
+		<script type="text/javascript" src="ApiGwJs/CognitoAccess/apiGateway-js-sdk/lib/apiGatewayCore/apiGatewayClient.js"></script>
+		<script type="text/javascript" src="ApiGwJs/CognitoAccess/apiGateway-js-sdk/lib/apiGatewayCore/simpleHttpClient.js"></script>
+		<script type="text/javascript" src="ApiGwJs/CognitoAccess/apiGateway-js-sdk/lib/apiGatewayCore/utils.js"></script>
+		<script type="text/javascript" src="ApiGwJs/CognitoAccess/apiGateway-js-sdk/apigClient.js"></script>
+		
+    <script src="cognitoFn.bundle.js"></script>
+    <script src="aws-sdk.min.js"></script>
+     
+     
+    <link href="https://unpkg.com/tabulator-tables@4.5.2/dist/css/tabulator_modern.min.css" rel="stylesheet">
+
+	<script type="text/javascript" src="https://unpkg.com/tabulator-tables@4.5.2/dist/js/tabulator.min.js"></script>
+    <link href="login.css" rel="stylesheet">
+
+
+<div id="Header">
+	<div><img src='images/DbITHeader.jpg' style="width:100%"></div></div>
+	<div class="box" id="Status">
+		<div id="UserStatus"></div>
+		<div id="ServiceStatus"></div>
+	</div>
+	
+	
+
+</div>
+
+<div id="resource_list_edit"></div>
+
+<script type="text/javascript">
+
+/*
+Copyright (c) <2019> <jose neto jose.neto@liber4e.com>
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+*/
+
+///////////////////////////////////////////////////////////////
+// SETTINGS    ///////////////////////////////////////////////
+
+var ScheduleTimingsOps = [
+"0600:2000",
+"0900:1900",
+"2000:0600",
+]
+var ScheduleWeekDaysOps = [
+"all",
+"weekworkdays",
+"sat,sun"
+]
+
+var AsGroupType = "AsGrp"
+var Ec2Type = "ec2"
+var RdsType = "rds"
+
+var CognitoWebClientId = '3fuov3suubf1331c1qeddt5r4r'
+var apigClient = apigClientFactory.newClient();
+var RefreshMsSecs = 6500000 //milliseconds
+/////////////////////////////////////////////////////////////////////
+// ENDOF SETTINGS    ///////////////////////////////////////////////
+
+
+var CurrentUser;
+var idToken;
+var userData;
+var ApiGwAuthHeaders
+var CurrentDayTime = {Day: '', Time: ''}
+
+CheckSignedStatus()
+RefreshAndKeepTokenACtive(RefreshMsSecs);
+//RefreshAndKeepTokenACtive(300); // 5mins
+
+
+function RefreshAndKeepTokenACtive(RefreshMicSecs){
+	console.log("RefreshAndKeepTokenACtive: " + RefreshMicSecs + " ms")
+
+	setTimeout(function(){ 
+		AuthFnGlobal.currentSession().then(function (Out) {
+				console.log("Refreshing IdToken")
+				console.log(Out.idToken.jwtToken)
+				console.log("Reloading in 500ms");
+				setTimeout(function () {console.log("Reloading");debugger;location.reload();}, 500)
+				})
+							
+		}, RefreshMicSecs);
+	}
+
+
+function CheckSignedStatus() {
+	if (localStorage.getItem('CognitoIdentityServiceProvider.'+CognitoWebClientId+'.LastAuthUser') === null) {
+		console.log("NotLoogedIn")
+		MakeLoginFormOnHTML("UserStatus")
+		BuildResourcetable([])
+		} 
+	else {
+		CurrentUser = localStorage.getItem('CognitoIdentityServiceProvider.'+CognitoWebClientId+'.LastAuthUser');
+		idToken = localStorage.getItem('CognitoIdentityServiceProvider.'+CognitoWebClientId+'.'+CurrentUser+'.idToken');
+		userData = JSON.parse(localStorage.getItem('CognitoIdentityServiceProvider.'+CognitoWebClientId+'.'+CurrentUser+'.userData'));
+		ApiGwAuthHeaders = {'headers': {'Authorization':idToken}};
+		
+		UpdateUserDataOnHTML("UserStatus");
+
+		GetResourceList()
+				.then(
+					function(Out) {
+						console.log('listGet Out')
+						console.log(Out)				
+						console.log(Out[Out.length-1])
+						CurrentDayTime = { ...Out[Out.length-1] };
+						Out.splice(Out.length-1,1)
+
+						var MultiProjectResources = [];
+						for (var i = 0; i < Out.length; i++) { 
+							// Handle Projects Tags
+							if( Out[i].Project !== null) {
+								if ( Out[i].Project.split(",").length > 1) {
+								var ProjectArray = Out[i].Project.split(",")
+								for (var ii = 0; ii < ProjectArray.length; ii++) { 
+								MultiProjectResources.push({ ...Out[i] })
+								MultiProjectResources[MultiProjectResources.length-1].Project = ProjectArray[ii]
+								}
+								delete Out[i]; 
+								}
+								}
+							else  Out[i].Project = " No Project Associated "
+						}
+					var ResourceList = Out.concat(MultiProjectResources);
+						BuildResourcetable(ResourceList)
+						UpdateStatus("ServiceStatus")
+					})
+				.catch(function(Out) {
+						console.log('listGet Error')
+						console.log(Out)
+						debugger
+						alert("Resource List Access Errors, Login Expired? Logout and ReLogin")
+					})
+					
+		}
+	}
+
+
+function LogOut(){
+	AuthFnGlobal.signOut()
+    .then(data => console.log(data))
+    .catch(err => console.log(err));
+	}
+
+function AuthSignInPromise(usernameIn,PasswdIn) {
+		return new Promise(function(resolve, reject){
+			AuthFnGlobal.signIn(usernameIn,PasswdIn)
+				.then(
+					function(Out) {
+						console.log('successful sign in')
+						console.log(Out)
+						resolve(Out);
+					})
+				.catch(function(Out) {
+						console.log('Error sign in')
+						console.log(Out)
+						reject(Out);
+					})
+		});
+}
+
+function UpdateUserDataOnHTML(HtmlElemId){
+	var MainDiv = document.getElementById(HtmlElemId);
+		while (MainDiv.firstChild) {
+			MainDiv.removeChild(MainDiv.firstChild);
+		}
+		//MainDiv.setAttribute('class',"box");
+
+	var InfoParag = document.createElement("p");
+		InfoParag.innerHTML = "LoggedIn: " + CurrentUser;
+		InfoParag.setAttribute('class',"infobox");
+
+		MainDiv.appendChild(InfoParag);
+
+	var LogoutDiv = document.createElement("div");
+
+	var button = document.createElement("input"); 
+		button.setAttribute('type',"submit");
+		button.setAttribute('value',"Logout");
+		button.setAttribute('class',"btn");
+
+		button.onclick=function() {
+			
+			AuthFnGlobal.signOut()
+				.then(function(Out) {
+					CheckSignedStatus();
+					})
+				.catch(function(Out) {CheckSignedStatus();})
+				} 
+		LogoutDiv.appendChild(button);
+		MainDiv.appendChild(LogoutDiv);
+	}
+	
+function UpdateStatus(HtmlElemId){
+	var MainDiv = document.getElementById(HtmlElemId);
+
+	var InfoDiv = document.createElement("div");
+
+	var InfoParag = document.createElement("p");
+		InfoParag.id="ServiceStatus"
+		InfoParag.innerHTML = "Current Day: " + CurrentDayTime.Day + " Time: " + CurrentDayTime.Time;
+		InfoParag.setAttribute('class',"infobox");
+		InfoParag.style.cssFloat = "right";
+		InfoDiv.appendChild(InfoParag);
+		MainDiv.appendChild(InfoDiv);
+	}
+	
+	
+
+function MakeLoginFormOnHTML(HtmlElemId){
+		
+	var MainDiv = document.getElementById(HtmlElemId);
+		while (MainDiv.firstChild) {
+			MainDiv.removeChild(MainDiv.firstChild);
+		}
+
+	var LoginDiv = document.createElement("div");
+
+		
+	var username = document.createElement("input"); 
+		username.setAttribute('type',"text");
+		username.setAttribute('name',"username");
+		username.setAttribute('value',"username");
+		username.setAttribute('id',"username");
+		username.setAttribute('class',"infobox");
+
+	var password = document.createElement("input"); 
+		password.setAttribute('type',"password");
+		password.setAttribute('name',"password");
+		password.setAttribute('id',"password");
+		password.setAttribute('class',"infobox");
+
+	var BtnDiv = document.createElement("div");
+
+	var button = document.createElement("input"); 
+		button.setAttribute('type',"submit");
+		button.setAttribute('value',"Login");
+		button.setAttribute('class',"btn");
+
+		
+		button.onclick=function() {
+			this.value = "Wait";
+			AuthSignInPromise(document.getElementById('username').value, document.getElementById('password').value)
+				.then(function(Out) {
+					CheckSignedStatus();
+					})
+				.catch(function(Out) {CheckSignedStatus();})
+				} 
+		
+		LoginDiv.appendChild(username);
+		LoginDiv.appendChild(password);
+		BtnDiv.appendChild(button);
+		MainDiv.appendChild(LoginDiv);
+				MainDiv.appendChild(BtnDiv);
+
+}
+		
+
+function GetResourceList(){
+		return new Promise(function(resolve, reject){
+			apigClient.listGet(undefined,undefined,ApiGwAuthHeaders)
+				.then(
+					function(Out) {
+						console.log('listGet Out')
+						console.log(Out)
+						resolve(Out.data);
+					})
+				.catch(function(Out) {
+						console.log('listGet Error')
+						console.log(Out)
+						reject();
+					})
+		});
+	
+	}
+
+
+
+///////////////////////////////////////////////////////////////
+// TABLE BUILD ///////////////////////////////////////////////
+
+function BuildResourcetable(TableDataIn) {
+
+
+// Verify if Resource Type can be Edited /////////////////////////
+var Ec2editCheck = function(cell){
+    var data = cell.getRow().getData();
+    return ( (data.ResourceType == RdsType ) || (data.ResourceType == AsGroupType ) || ( data.ResourceType == Ec2Type && ( data.ResourceAsGroup == undefined || data.ResourceAsGroup == "") ) )
+}
+//////////////////////////////////////////////////////////////
+
+
+//validator Date
+	var CheckDate = function(cell, value){
+	if ((value.match(/^[0-9]{2}[\/]{1}[0-9]{2}[\/]{1}[0-9]{4}$/)) !== null) return value
+	else return "False"
+}
+
+var table = new Tabulator("#resource_list_edit", {
+    layout:"fitColumns",
+    groupBy:"Project",
+	/*
+	validationFailed:function(cell, value, validators){
+		//cell - cell component for the edited cell
+		//value - the value that failed validation
+		//validatiors - an array of validator objects that failed
+		debugger
+		},
+	*/
+    data:TableDataIn, //set initial table data
+    // EDIT DATA ///////////////////////////////////////////////////////
+    cellEdited:function(cell){
+		console.log("Updating")
+		console.log(cell._cell.row.data)
+		console.log("resourceId: " +cell._cell.row.data.resourceId)
+		console.log("field: " +cell._cell.column.field)
+		console.log("oldValue: " +cell._cell.oldValue)
+		console.log("value: " +cell._cell.value)
+		
+		// Call Aws API ///////////////////////////////////////////////
+		apigClient.updatescheduleGet({
+			'ScheduleOverRide':cell._cell.row.data.ScheduleOverRide,
+			'ScheduleTimings':cell._cell.row.data.ScheduleTimings,
+			'ScheduleWeekDays':cell._cell.row.data.ScheduleWeekDays,
+			'ResourceType':cell._cell.row.data.ResourceType,
+			'resourceId':cell._cell.row.data.resourceId
+			},undefined,ApiGwAuthHeaders).then(function(result){
+				// Add Check IF Process Ok
+				if ( result.status == 200 ) { 
+					alert("Edit OK \n" + result.data + "\nReloading");
+					location.reload();
+					}
+				else alert("ERROR ON EDIT \n" + result.data );
+				
+				})
+		
+		},
+    // END OF EDIT DATA ///////////////////////////////////////////////////////
+
+    columns:[
+            {title:"ResourceName", field:"ResourceName",width:250},
+            {title:"resourceId", field:"resourceId"},
+			{title:"Project", field:"Project",headerFilter:true},
+			{title:"ResourceType", field:"ResourceType",width:150},
+			{title:"ResourceAsGroup", field:"ResourceAsGroup"},
+			{title:"CurrentState", field:"CurrentState",width:150},
+			{title:"DesiredState", field:"ScheduleDesiredState",  
+				formatter:function(cell, formatterParams){
+					   var value = cell.getValue();
+					   if(value != undefined) {
+							if( value == cell._cell.row.data.CurrentState || cell._cell.row.data.CurrentState == "terminated" ||
+							 ( cell._cell.row.data.CurrentState == "available" && value == "running" )  ){
+							return "<span style='color:grey; font-weight:normal;'>" + value + "</span>";
+							}else{
+							return "<span style='color:red; font-weight:bold;'>" + value + "</span>";
+							}
+						   }
+						 else return " "
+					}
+				},
+			//{title:"Schedule", field:"Schedule"},
+			{title:"ScheduleOverRide", field:"ScheduleOverRide",editor:true,editable:Ec2editCheck,validator:["regex:^[0-9]{2}-[0-9]{2}-[0-9]{4}$|^$"]},
+				//validator:CheckDate},
+			{title:"ScheduleTimings", field:"ScheduleTimings",editor:"select",editable:Ec2editCheck, editorParams:{
+				values:{
+					[ScheduleTimingsOps[0]]:ScheduleTimingsOps[0],
+					[ScheduleTimingsOps[1]]:ScheduleTimingsOps[1],
+					[ScheduleTimingsOps[2]]:ScheduleTimingsOps[2]
+				}
+				}},
+			{title:"ScheduleWeekDays", field:"ScheduleWeekDays",editor:"select",editable:Ec2editCheck, editorParams:{values:{
+					[ScheduleWeekDaysOps[0]]:ScheduleWeekDaysOps[0],
+					[ScheduleWeekDaysOps[1]]:ScheduleWeekDaysOps[1],
+					[ScheduleWeekDaysOps[2]]:ScheduleWeekDaysOps[2]
+				
+				}}},  
+    ],
+});
+}
+
+
+
+
+	</script>
+
+  </body>
+</html>
