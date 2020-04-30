@@ -45,7 +45,7 @@ jobs:
         echo "LayerArn: ${LayerArn}"
         LayerName=$(echo $LayerArn | cut --fields=7 --delimiter=: )
         echo "LayerName: ${LayerName}"
-        NewVersionNumber=$(aws lambda publish-layer-version --layer-name $LayerName --s3-bucket $BucketName --s3-key SchedulerFunctions.zip --compatible-runtimes python3.6 python3.7 | awk '/"Version":/ {print $2}' | sed 's/,//')
+        NewVersionNumber=$(aws lambda publish-layer-version --layer-name $LayerName --content S3Bucket=$BucketName,S3Key=SchedulerFunctions.zip --compatible-runtimes python3.6 python3.7 | awk '/"Version":/ {print $2}' | sed 's/,//')
         echo "NewVersionNumber: ${NewVersionNumber}"
         aws lambda update-function-code --function-name ResourcesApi --s3-bucket $BucketName --s3-key ResourcesApi.zip
         aws lambda update-function-code --function-name SchedulerCheckAndApply --s3-bucket $BucketName --s3-key SchedulerCheckAndApply.zip
