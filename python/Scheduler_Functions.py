@@ -221,7 +221,18 @@ def ProcessTags(TagsIn):
 ## EC2 #################################################################
 ########################################################################
 def GetAllEc2Instances():
-	EcList = ec2_session.describe_instances()
+	EcList = ec2_session.describe_instances(
+		Filters=[
+				{
+					'Name': 'tag-key',
+					'Values': [SchedulerFlagTagName]
+				},
+				{
+					'Name': 'tag-value',
+					'Values': ['true']
+				}
+		]
+	)
 
 	Ec2InfoToReturn = []
 	for Instance in EcList['Reservations']:
