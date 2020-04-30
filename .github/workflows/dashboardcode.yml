@@ -1,0 +1,58 @@
+name: LambdaCodeUpdated
+on:
+  push:
+    branches:
+    - master
+    tags:        
+    - '*'
+    paths:
+    - 'DashBoard'
+    - 'README.md'
+jobs:
+  updatecode:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+          
+    - name: Configure AWS Credentials
+      uses: aws-actions/configure-aws-credentials@v1
+      with:
+        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        aws-region: eu-west-1
+        
+    - name: apigateway get-sdk
+      run: |     
+            aws apigateway get-sdk --rest-api-id wf4ee78yt6 --stage-name Prod --sdk-type javascript wf4ee78yt6-wf4ee78yt6-js-sdk.zip
+
+
+    - uses: montudor/action-zip@v0.1.0
+      with:
+         args: unzip -o js-sdk.zip  -d DashBoard/dist/ApiGwJs/CognitoAccess/
+       
+    - name: lambda code update
+      run: |     
+            aws apigateway get-sdk --rest-api-id wf4ee78yt6 --stage-name Prod --sdk-type javascript wf4ee78yt6-wf4ee78yt6-js-sdk.zip
+            
+
+            cognitoUserPoolID=$(aws cloudformation list-exports --query "Exports[?Name=='cognitoUserPoolID'].Value" --no-paginate --output text )
+            echo "cognitoUserPoolID: $cognitoUserPoolID"
+            sed -i "s/userPoolId: '[a-zA-Z0-9-]\+',/userPoolId: '$cognitoUserPoolID',/" DashBoard/src/cognitoFn.js
+
+            UserPoolClientId=$(aws cloudformation list-exports --query "Exports[?Name=='UserPoolClientId'].Value" --no-paginate --output text )
+            echo "UserPoolClientId: $UserPoolClientId"
+            sed -i "s/userPoolWebClientId: '\([a-zA-Z0-9]\+\)',/userPoolWebClientId:: '$UserPoolClientId',/" DashBoard/src/cognitoFn.js
+            sed -i "s/var CognitoWebClientId = '[a-zA-Z0-9]\+'/var CognitoWebClientId = '$UserPoolClientId'/" DashBoard/dist/index.html
+
+            cd DashBoard
+            npx webpack
+
+            DashBoardBucketName=$(aws cloudformation list-exports --query "Exports[?Name=='DashBoardBucketName'].Value" --no-paginate --output text )
+            echo "DashBoardBucketName: $DashBoardBucketName"
+            aws s3 sync dist/ s3://${DashBoardBucketName} --exclude "node_modules/*" --exclude package-lock.json 
+            aws s3api list-objects --bucket ${DashBoardBucketName} | awk '/Key/ { print $2 }' | sed 's/,//g'|sed 's/"//g' | while read FILE ; do aws s3api put-object-acl --acl public-read --bucket ${DashBoardBucketName} --key $FILE;done
+
+            cognitoUserPoolID=$(aws cloudformation list-exports --query "Exports[?Name=='cognitoUserPoolID'].Value" --no-paginate --output text )
+            aws cognito-idp admin-set-user-password --user-pool-id $cognitoUserPoolID --username "dashboard1" --password demodemo --permanent
+
+
