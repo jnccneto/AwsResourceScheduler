@@ -41,7 +41,7 @@ jobs:
       run: |     
         BucketName=$(aws cloudformation list-exports --query "Exports[?Name=='CodeSourceBucketName'].Value" --no-paginate --output text )
         echo "BucketName $BucketName"
-        LayerArn=$(aws cloudformation list-exports --query "Exports[?Name=='SchedulerFunctionsLayerARN'].Value" --no-paginate --output text )
+        LayerArn=$(aws cloudformation list-exports --query "Exports[?Name=='SchedulerFunctionsLayerARN'].Value" --no-paginate --output text | cut --delimiter=: --fields=1,2,3,4,5,6,7 )
         echo "LayerArn: ${LayerArn}"
         LayerName=$(echo $LayerArn | cut --fields=7 --delimiter=: )
         echo "LayerName: ${LayerName}"
@@ -49,7 +49,7 @@ jobs:
         echo "NewVersionNumber: ${NewVersionNumber}"
         aws lambda update-function-code --function-name ResourcesApi --s3-bucket $BucketName --s3-key ResourcesApi.zip
         aws lambda update-function-code --function-name SchedulerCheckAndApply --s3-bucket $BucketName --s3-key SchedulerCheckAndApply.zip
-        aws lambda update-function-configuration --function-name SchedulerCheckAndApply --layers "$LayerArn:${NewVersionNumber}"
-        aws lambda update-function-configuration --function-name ResourcesApi --layers "$LayerArn:${NewVersionNumber}"
+        aws lambda update-function-configuration --function-name SchedulerCheckAndApply --layers "${LayerArn}:${NewVersionNumber}"
+        aws lambda update-function-configuration --function-name ResourcesApi --layers "${LayerArn}:${NewVersionNumber}"
 
 
