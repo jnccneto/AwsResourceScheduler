@@ -1,4 +1,4 @@
-name: LambdaCodeUpdated
+name: DashBoardCodeUpdate
 on:
   push:
     branches:
