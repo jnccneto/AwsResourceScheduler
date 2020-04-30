@@ -32,22 +32,21 @@ jobs:
         
     - name: Copy files to S3 with the AWS CLI
       run: |
-        ARN=$(aws cloudformation list-exports --query "Exports[?Name=='CodeSourceBucketARN'].Value" --no-paginate --output text )
-        BucketName=$(aws cloudformation list-exports --query "Exports[?Name=='CodeSourceBucketARN'].Value" --no-paginate --output text | sed 's/arn:aws:s3::://')
+        BucketName=$(aws cloudformation list-exports --query "Exports[?Name=='CodeSourceBucketName'].Value" --no-paginate --output text ')
         echo "BucketName $BucketName"
         aws s3 cp SchedulerCheckAndApply.zip s3://$BucketName
         aws s3 cp ResourcesApi.zip s3://$BucketName
         aws s3 cp SchedulerFunctions.zip s3://$BucketName
     - name: lambda code update
       run: |     
+        BucketName=$(aws cloudformation list-exports --query "Exports[?Name=='CodeSourceBucketName'].Value" --no-paginate --output text ')
+        echo "BucketName $BucketName"
         LayerArn=$(aws cloudformation list-exports --query "Exports[?Name=='SchedulerFunctionsLayerARN'].Value" --no-paginate --output text )
         echo "LayerArn: ${LayerArn}"
         LayerName=$(echo $LayerArn | cut --fields=7 --delimiter=: )
         echo "LayerName: ${LayerName}"
-        NewVersionNumber=$(aws lambda publish-layer-version --layer-name $LayerName --zip-file fileb://SchedulerFunctions.zip --compatible-runtimes python3.6 python3.7 | awk '/"Version":/ {print $2}' | sed 's/,//')
+        NewVersionNumber=$(aws lambda publish-layer-version --layer-name $LayerName --s3-bucket $BucketName --s3-key SchedulerFunctions.zip --compatible-runtimes python3.6 python3.7 | awk '/"Version":/ {print $2}' | sed 's/,//')
         echo "NewVersionNumber: ${NewVersionNumber}"
-        BucketName=$(aws cloudformation list-exports --query "Exports[?Name=='CodeSourceBucketARN'].Value" --no-paginate --output text | sed 's/arn:aws:s3::://')
-        echo "BucketName $BucketName"
         aws lambda update-function-code --function-name ResourcesApi --s3-bucket $BucketName --s3-key ResourcesApi.zip
         aws lambda update-function-code --function-name SchedulerCheckAndApply --s3-bucket $BucketName --s3-key SchedulerCheckAndApply.zip
         aws lambda update-function-configuration --function-name SchedulerCheckAndApply --layers "arn:aws:lambda:eu-west-1:809572216788:layer:ResourcesFunctionsforScheduler:${NewVersionNumber}"
