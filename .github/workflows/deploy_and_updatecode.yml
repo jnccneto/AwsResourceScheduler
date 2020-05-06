@@ -9,10 +9,27 @@ on:
     - 'CloudFormationStacks/*.yml'
     - 'InfraDeployTriggerFile.txt'
     - '**.py'
+    - 'PythonUpdateTriggerFile.txt'
 
 
 jobs:
-  cloudformation_job:
+  debug_info:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v1
+    - name: Dump GitHub context
+      env:
+        GITHUB_CONTEXT: ${{ toJson(github) }}
+      run: echo "$GITHUB_CONTEXT"
+    - name: Show GitHub ref
+      run: echo "$GITHUB_REF"
+    - name: Dump event JSON
+      env:
+        EVENT_JSON_FILENAME: ${{ github.event_path }}
+      run: cat "$EVENT_JSON_FILENAME"
+
+    
+  cloudformation_deploy:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
@@ -50,7 +67,9 @@ jobs:
 
 
   updatecode:
+    if: contains(github.ref, 'pythonupdate')  
     runs-on: ubuntu-latest
+    needs: cloudformation_deploy
     steps:
     - uses: actions/checkout@v2
     - uses: montudor/action-zip@v0.1.0
