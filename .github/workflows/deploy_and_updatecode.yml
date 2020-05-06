@@ -57,14 +57,15 @@ jobs:
           zip -r SchedulerFunctions.zip python/
           zip ResourcesApi.zip ResourcesApi.py 
           zip SchedulerCheckAndApply.zip SchedulerCheckAndApply.py
+    - name: AWS Check Vars      
+      run: echo ${{ env }} 
     - name: Configure AWS Credentials
       uses: aws-actions/configure-aws-credentials@v1
       with:
         aws-access-key-id: ${{ env.AWS_ACCESS_KEY_ID }}
         aws-secret-access-key: ${{ env.AWS_SECRET_ACCESS_KEY }}
         aws-region: ${{ env.AWS_REGION }}
-    - name: AWS Check Vars      
-      run: echo ${{ env }}           
+         
         
     - name: CloudFormation Deploy S3 Stacks
       run: | 
