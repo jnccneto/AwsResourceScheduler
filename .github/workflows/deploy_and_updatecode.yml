@@ -8,6 +8,7 @@ on:
     paths:
     - 'CloudFormationStacks/*.yml'
     - '**.py'
+    - '*'
 
 jobs:
   debug_info:
