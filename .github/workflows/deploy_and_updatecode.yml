@@ -10,40 +10,21 @@ on:
     - '**.py'
     - '*'
 
-jobs:
-  debug_info:
-    runs-on: ubuntu-latest
-    steps:
-    - uses: actions/checkout@v1
-    - name: Dump GitHub context
-      env:
-        GITHUB_CONTEXT: ${{ toJson(github) }}
-      run: echo "$GITHUB_CONTEXT"
-    - name: Show GitHub ref
-      run: echo "$GITHUB_REF"
-    - name: Dump event JSON
-      env:
-        EVENT_JSON_FILENAME: ${{ github.event_path }}
-      run: cat "$EVENT_JSON_FILENAME"
-    - name: Dump commit message
-      env:
-        MESSAGE: ${{ github.event.head_commit.message }}
-      run: echo "$MESSAGE"        
-    - name: echo commit.message
-      run: echo ${{ github.event.head_commit.message }}       
-         
+jobs: 
   cloudformation_deploy:
     if: contains(github.event.head_commit.message, 'infra_deploy')
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
-    - name: Zip Python Files      
-      uses: montudor/action-zip@v0.1.0
+    - uses: montudor/action-zip@v0.1.0
       with:
-         args: 
-          zip -r SchedulerFunctions.zip python/
-          zip ResourcesApi.zip ResourcesApi.py 
-          zip SchedulerCheckAndApply.zip SchedulerCheckAndApply.py
+         args: zip -r SchedulerFunctions.zip python/
+    - uses: montudor/action-zip@v0.1.0
+      with:
+         args: zip ResourcesApi.zip ResourcesApi.py 
+    - uses: montudor/action-zip@v0.1.0
+      with:
+         args: zip SchedulerCheckAndApply.zip SchedulerCheckAndApply.py 
           
     - name: Configure AWS Credentials for ENV:LEARNING
       if: contains(github.event.head_commit.message, 'ENV:LEARNING')
