@@ -7,10 +7,7 @@ on:
     - '*'
     paths:
     - 'CloudFormationStacks/*.yml'
-    - 'InfraDeployTriggerFile.txt'
     - '**.py'
-    - 'PythonUpdateTriggerFile.txt'
-
 
 jobs:
   debug_info:
