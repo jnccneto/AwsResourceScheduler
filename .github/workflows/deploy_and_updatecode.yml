@@ -30,15 +30,15 @@ jobs:
       if: contains(github.event.head_commit.message, 'ENV:LEARNING')
       uses: aws-actions/configure-aws-credentials@v1
       with:
-        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID_LEARNING }}
+        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY_LEARNING }}
         aws-region: ${{ secrets.AWS_REGION }}
     - name: Configure AWS Credentials for ENV:TESTING
       if: contains(github.event.head_commit.message, 'ENV:TESTING')
       uses: aws-actions/configure-aws-credentials@v1
       with:
-        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID_TESTING }}
+        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY_TESTING }}
         aws-region: ${{ secrets.AWS_REGION }}         
         
     - name: CloudFormation Deploy S3 Stacks
@@ -72,12 +72,20 @@ jobs:
       with:
          args: zip SchedulerCheckAndApply.zip SchedulerCheckAndApply.py 
          
-    - name: Configure AWS Credentials
+    - name: Configure AWS Credentials for ENV:LEARNING
+      if: contains(github.event.head_commit.message, 'ENV:LEARNING')
       uses: aws-actions/configure-aws-credentials@v1
       with:
-        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-        aws-region: eu-west-1
+        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID_LEARNING }}
+        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY_LEARNING }}
+        aws-region: ${{ secrets.AWS_REGION }}
+    - name: Configure AWS Credentials for ENV:TESTING
+      if: contains(github.event.head_commit.message, 'ENV:TESTING')
+      uses: aws-actions/configure-aws-credentials@v1
+      with:
+        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID_TESTING }}
+        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY_TESTING }}
+        aws-region: ${{ secrets.AWS_REGION }}   
         
     - name: Copy files to S3 with the AWS CLI
       run: |
@@ -108,12 +116,20 @@ jobs:
     steps:
     - uses: actions/checkout@v2
           
-    - name: Configure AWS Credentials
+    - name: Configure AWS Credentials for ENV:LEARNING
+      if: contains(github.event.head_commit.message, 'ENV:LEARNING')
       uses: aws-actions/configure-aws-credentials@v1
       with:
-        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-        aws-region: eu-west-1
+        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID_LEARNING }}
+        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY_LEARNING }}
+        aws-region: ${{ secrets.AWS_REGION }}
+    - name: Configure AWS Credentials for ENV:TESTING
+      if: contains(github.event.head_commit.message, 'ENV:TESTING')
+      uses: aws-actions/configure-aws-credentials@v1
+      with:
+        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID_TESTING }}
+        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY_TESTING }}
+        aws-region: ${{ secrets.AWS_REGION }}   
         
     - name: apigateway get-sdk
       run: |     
