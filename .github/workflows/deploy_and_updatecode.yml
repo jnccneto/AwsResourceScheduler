@@ -30,18 +30,23 @@ jobs:
         MESSAGE: ${{ github.event.head_commit.message }}
       run: echo "$MESSAGE"        
     - name: echo commit.message
-      run: echo ${{ env }}       
+      run: echo ${{ github.event.head_commit.message }}       
 
+
+      
   aws_setup:
     runs-on: ubuntu-latest
-    steps:  
-    - name: Aws Vars Setup 
-      env: 
-        AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}  
-        AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-        AWS_REGION: ${{ secrets.AWS_REGION }}
-      run: echo ${{ github.event.head_commit.message }}       
-    
+    steps:
+      - name: Hello world
+        run: echo Hello world $FIRST_NAME $middle_name $Last_Name!
+        env:
+          FIRST_NAME: Mona
+          middle_name: The
+          Last_Name: Octocat
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}  
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          AWS_REGION: ${{ secrets.AWS_REGION }}
+            
   cloudformation_deploy:
     if: contains(github.event.head_commit.message, 'infra_deploy')
     needs: aws_setup
