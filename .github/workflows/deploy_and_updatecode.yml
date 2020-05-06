@@ -32,13 +32,10 @@ jobs:
     - name: echo commit.message
       run: echo ${{ github.event.head_commit.message }}       
 
-
-      
   aws_setup:
     runs-on: ubuntu-latest
     steps:
-      - name: Hello world
-        run: echo Hello world $FIRST_NAME $middle_name $Last_Name!
+      - run: echo Hello world $FIRST_NAME $middle_name $Last_Name!    
         env:
           FIRST_NAME: Mona
           middle_name: The
