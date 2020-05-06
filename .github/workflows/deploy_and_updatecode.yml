@@ -40,7 +40,9 @@ jobs:
     - uses: actions/checkout@v2
     - uses: montudor/action-zip@v0.1.0
       with:
-         args: zip -r SchedulerFunctions.zip python/
+         args: 
+          zip -r SchedulerFunctions.zip python/
+          zip ResourcesApi.zip ResourcesApi.py 
     - uses: montudor/action-zip@v0.1.0
       with:
          args: zip ResourcesApi.zip ResourcesApi.py 
