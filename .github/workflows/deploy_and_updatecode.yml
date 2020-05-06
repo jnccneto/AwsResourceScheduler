@@ -30,11 +30,24 @@ jobs:
         MESSAGE: ${{ github.event.head_commit.message }}
       run: echo "$MESSAGE"        
     - name: echo commit.message
-      run: echo ${{ github.event.head_commit.message }}       
+      run: echo ${{ github.event.head_commit.message }}    
 
+  aws_setup:
+      name: Configure AWS Credential
+      runs-on: ubuntu-latest
+      steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: eu-west-1
     
   cloudformation_deploy:
     if: contains(github.event.head_commit.message, 'infra_deploy')
+    needs: aws_setup
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
@@ -43,20 +56,7 @@ jobs:
          args: 
           zip -r SchedulerFunctions.zip python/
           zip ResourcesApi.zip ResourcesApi.py 
-    - uses: montudor/action-zip@v0.1.0
-      with:
-         args: zip ResourcesApi.zip ResourcesApi.py 
-    - uses: montudor/action-zip@v0.1.0
-      with:
-         args: zip SchedulerCheckAndApply.zip SchedulerCheckAndApply.py 
-         
-    - name: Configure AWS Credentials
-      uses: aws-actions/configure-aws-credentials@v1
-      with:
-        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-        aws-region: eu-west-1
-        
+          zip SchedulerCheckAndApply.zip SchedulerCheckAndApply.py
     - name: CloudFormation Deploy S3 Stacks
       run: | 
         aws cloudformation deploy  --stack-name S3 --template-file CloudFormationStacks/S3.yml --no-fail-on-empty-changeset
