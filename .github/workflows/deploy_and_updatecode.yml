@@ -47,8 +47,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
-    - uses: montudor/action-zip@v0.1.0
-    - name: Zip Python Files   
+    - name: Zip Python Files     
+      uses: montudor/action-zip@v0.1.0
       with:
          args: 
           zip -r SchedulerFunctions.zip python/
