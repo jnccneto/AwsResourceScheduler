@@ -7,7 +7,6 @@ on:
     - '*'
     paths:
     - 'CloudFormationStacks/*.yml'
-    - 'InfraDeployTriggerFile.txt'
 jobs:
   cloudformation_job:
     runs-on: ubuntu-latest
