@@ -30,20 +30,16 @@ jobs:
         MESSAGE: ${{ github.event.head_commit.message }}
       run: echo "$MESSAGE"        
     - name: echo commit.message
-      run: echo ${{ github.event.head_commit.message }}    
+      run: echo ${{ github.event.head_commit.message }}       
 
   aws_setup:
-      name: Configure AWS Credential
-      runs-on: ubuntu-latest
-      steps:
-      - name: Checkout
-        uses: actions/checkout@v2
-      - name: Configure AWS credentials
-        uses: aws-actions/configure-aws-credentials@v1
-        with:
-          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region: eu-west-1
+    runs-on: ubuntu-latest
+    steps:  
+    - name: Aws Vars Setup 
+      env: 
+        AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}  
+        AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        AWS_REGION: ${{ secrets.AWS_REGION }}
     
   cloudformation_deploy:
     if: contains(github.event.head_commit.message, 'infra_deploy')
@@ -52,11 +48,19 @@ jobs:
     steps:
     - uses: actions/checkout@v2
     - uses: montudor/action-zip@v0.1.0
+    - name: Zip Python Files   
       with:
          args: 
           zip -r SchedulerFunctions.zip python/
           zip ResourcesApi.zip ResourcesApi.py 
           zip SchedulerCheckAndApply.zip SchedulerCheckAndApply.py
+    - name: Configure AWS Credentials
+      uses: aws-actions/configure-aws-credentials@v1
+      with:
+        aws-access-key-id: ${{ env.AWS_ACCESS_KEY_ID }}
+        aws-secret-access-key: ${{ env.AWS_SECRET_ACCESS_KEY }}
+        aws-region: ${{ env.AWS_REGION }}
+        
     - name: CloudFormation Deploy S3 Stacks
       run: | 
         aws cloudformation deploy  --stack-name S3 --template-file CloudFormationStacks/S3.yml --no-fail-on-empty-changeset
