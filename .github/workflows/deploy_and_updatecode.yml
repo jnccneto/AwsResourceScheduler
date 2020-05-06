@@ -1,4 +1,4 @@
-name: CloudFormationUpdate
+name: DeployAndUpdateCode
 on:
   push:
     branches:
@@ -36,6 +36,14 @@ jobs:
     - name: CloudFormation Deploy S3 Stacks
       run: | 
         aws cloudformation deploy  --stack-name S3 --template-file CloudFormationStacks/S3.yml --no-fail-on-empty-changeset
+    - name: Copy files to S3 with the AWS CLI
+      run: |
+        ARN=$(aws cloudformation list-exports --query "Exports[?Name=='CodeSourceBucketARN'].Value" --no-paginate --output text )
+        BucketName=$(aws cloudformation list-exports --query "Exports[?Name=='CodeSourceBucketARN'].Value" --no-paginate --output text | sed 's/arn:aws:s3::://')
+        echo "BucketName $BucketName"
+        aws s3 cp SchedulerCheckAndApply.zip s3://$BucketName
+        aws s3 cp ResourcesApi.zip s3://$BucketName
+        aws s3 cp SchedulerFunctions.zip s3://$BucketName        
     - name: CloudFormation Deploy Scheduler Stack
       run: | 
         aws cloudformation deploy  --stack-name Scheduler --template-file CloudFormationStacks/Scheduler.yml --no-fail-on-empty-changeset --capabilities CAPABILITY_NAMED_IAM
