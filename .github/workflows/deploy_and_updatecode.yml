@@ -151,6 +151,8 @@ jobs:
             echo "UserPoolClientId: $UserPoolClientId"
             sed -i "s/userPoolWebClientId: '\([a-zA-Z0-9]\+\)',/userPoolWebClientId:: '$UserPoolClientId',/" DashBoard/src/cognitoFn.js
             sed -i "s/var CognitoWebClientId = '[a-zA-Z0-9]\+'/var CognitoWebClientId = '$UserPoolClientId'/" DashBoard/dist/index.html
+            grep -r Id: DashBoard/src/
+            grep "CognitoWebClientId ="  DashBoard/dist/index.html 
             cd DashBoard
             npx webpack
             DashBoardBucketName=$(aws cloudformation list-exports --query "Exports[?Name=='DashBoardBucketName'].Value" --no-paginate --output text )
