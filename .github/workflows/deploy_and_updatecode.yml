@@ -27,6 +27,12 @@ jobs:
       env:
         EVENT_JSON_FILENAME: ${{ github.event_path }}
       run: cat "$EVENT_JSON_FILENAME"
+    - name: Dump commit message
+      env:
+        MESSAGE: ${{ github.event.head_commit.message }}
+      run: cat "$MESSAGE"      
+    - name: echo commit.message
+      run: echo ${{ github.event.head_commit.message }}       
 
     
   cloudformation_deploy:
