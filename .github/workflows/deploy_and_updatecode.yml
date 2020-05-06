@@ -51,7 +51,7 @@ jobs:
     steps:
     - uses: actions/checkout@v2
     - name: Zip Python Files      
-    - uses: montudor/action-zip@v0.1.0
+      uses: montudor/action-zip@v0.1.0
       with:
          args: 
           zip -r SchedulerFunctions.zip python/
