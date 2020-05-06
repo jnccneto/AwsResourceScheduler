@@ -74,8 +74,8 @@ jobs:
 
 
   updatecode:
-    if: contains(github.event.head_commit.message, 'python_update')
     runs-on: ubuntu-latest
+    if: "contains(github.event.head_commit.message, 'python_update')"
     needs: cloudformation_deploy
     steps:
     - uses: actions/checkout@v2
