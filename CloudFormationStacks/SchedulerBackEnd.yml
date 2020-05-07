@@ -2,10 +2,6 @@ AWSTemplateFormatVersion: "2010-09-09"
 Description: "API Gateway and Lambda function"
 Resources:
 
-#####################################################
-## IAM ROLES 
-#####################################################
-
  LambdaSchedulerApiFnRole:
     Type: AWS::IAM::Role
     Properties: 
@@ -84,9 +80,6 @@ Resources:
      - arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole
      RoleName: LambdaSchedulerExecFn
 
-#####################################################
-## LAMBDA
-#####################################################
 
  SchedulerFunctionsLayer:
   Type: AWS::Lambda::LayerVersion
@@ -95,19 +88,16 @@ Resources:
       - python3.6
       - python3.7
     Content:
-      S3Bucket: 
-       Fn::ImportValue: CodeSourceBucketName       
+      S3Bucket: resouceschedulersource
       S3Key: SchedulerFunctions.zip
     Description: SchedulerFunctions
     LayerName: SchedulerFunctionsLayer
     LicenseInfo: MIT
-    
  ResourcesApi:
    Type: AWS::Lambda::Function
    Properties:
      Code:
-      S3Bucket: 
-       Fn::ImportValue: CodeSourceBucketName       
+      S3Bucket: "resouceschedulersource"
       S3Key: "ResourcesApi.zip"
      Description: "ResourcesApi LAMBDA"
      Runtime: "python3.7"
@@ -122,8 +112,7 @@ Resources:
    Type: AWS::Lambda::Function
    Properties:
      Code:
-      S3Bucket: 
-       Fn::ImportValue: CodeSourceBucketName       
+      S3Bucket: "resouceschedulersource"
       S3Key: "SchedulerCheckAndApply.zip"
      Description: "SchedulerCheckAndApply LAMBDA"
      Runtime: "python3.7"
@@ -152,15 +141,12 @@ Resources:
      SourceArn: !Sub "arn:aws:execute-api:${AWS::Region}:${AWS::AccountId}:${apiGateway}/*/GET/updateschedule"
 
 
-#####################################################
-## CloudWatch Events
-#####################################################
 
  EventToExec: 
       Type: AWS::Events::Rule
       Properties: 
-        Description: "Exec every 5 Minutes"
-        ScheduleExpression: "rate(5 minutes)"
+        Description: "cron(0/5 * * * ? *)"
+        ScheduleExpression: "rate(1 minute)"
         State: "ENABLED"
         Targets: 
           - 
@@ -181,10 +167,7 @@ Resources:
             - "EventToExec"
             - "Arn"       
   
-#####################################################
-## API GW
-#####################################################
-
+ 
  apiGateway:
     Type: "AWS::ApiGateway::RestApi"
     Properties:
@@ -337,10 +320,6 @@ Resources:
    Type: COGNITO_USER_POOLS
   
   
-#####################################################
-## COGNITO
-#####################################################
-
   
  cognitoUserPool:
   Type: AWS::Cognito::UserPool
@@ -378,41 +357,21 @@ Resources:
    Username: dashboard1
    UserPoolId: !Ref cognitoUserPool
     
-
-
-
+    
 Outputs:
   ApiGatewayListURL:
     Value: !Sub 
      - "https://${apiGateway}.execute-api.${AWS::Region}.amazonaws.com/${Deployment}/list"
      - Deployment: !Ref apiGatewayStageProd
   apiGatewayID:
-   Value: !Ref apiGateway 
-   Export:
-     Name: apiGatewayID    
+   Value: !Ref apiGateway   
   cognitoUserPoolID:
    Value: !Ref cognitoUserPool      
-   Export:
-     Name: cognitoUserPoolID     
   UserPoolClientId:
    Value: !Ref UserPoolClient     
-   Export:
-     Name: UserPoolClientId     
   JsSDK:
     Value: !Sub "aws apigateway get-sdk --rest-api-id ${apiGateway} --stage-name Prod --sdk-type javascript API_SDK.zip"
-  SchedulerFunctionsLayer:
-    Value: !Ref SchedulerFunctionsLayer
-    Description: SchedulerFunctionsLayer ARN
-    Export:
-     Name: SchedulerFunctionsLayerARN        
-  ResourcesApi:
-    Value: !Ref ResourcesApi
-    Description: ResourcesApi ARN
-    Export:
-     Name: ResourcesApiARN  
-  SchedulerCheckAndApply:
-    Value: !Ref SchedulerCheckAndApply
-    Description: SchedulerCheckAndApply ARN
-    Export:
-     Name: SchedulerCheckAndApplyARN           
+   
+    
+    
     
