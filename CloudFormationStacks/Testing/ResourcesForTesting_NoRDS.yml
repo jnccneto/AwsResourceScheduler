@@ -1,0 +1,316 @@
+Resources:
+  Ec2AsGroupDayShift:
+    Type: AWS::AutoScaling::AutoScalingGroup
+    Properties: 
+      AutoScalingGroupName: 'AsGroupDayShift'
+      DesiredCapacity: 1
+      LaunchTemplate:
+        LaunchTemplateId: 'lt-0f90c58cbd358de7e'
+        Version: '8'
+      MaxSize: 2
+      MinSize: 1
+      VPCZoneIdentifier: ['subnet-00492ef6e969fb725','subnet-0757fdbdf83eab14f','subnet-0757fdbdf83eab14f']
+      Tags: 
+      - 
+        Key: "Name"
+        Value: "AsGroupDayShift"   
+        PropagateAtLaunch: False 
+      - 
+        Key: "Project"
+        Value: "App1_DayShift"
+        PropagateAtLaunch: True 
+      - 
+        Key: "Scheduler:Flag"
+        Value: True
+        PropagateAtLaunch: True                
+      - 
+        Key: "Scheduler:Timings"
+        Value: "0900:1900"
+        PropagateAtLaunch: True         
+      - 
+        Key: "Scheduler:WeekDays"
+        Value: "all"
+        PropagateAtLaunch: True         
+      - 
+        Key: "Scheduler:OverRide"
+        Value: ""
+        PropagateAtLaunch: True         
+  Ec2AsGroupNightShift:
+    Type: AWS::AutoScaling::AutoScalingGroup
+    Properties: 
+      AutoScalingGroupName: 'AsGroupNightShift'
+      DesiredCapacity: 1
+      LaunchTemplate:
+        LaunchTemplateId: 'lt-0f90c58cbd358de7e'
+        Version: '8'
+      MaxSize: 2
+      MinSize: 1
+      VPCZoneIdentifier: ['subnet-00492ef6e969fb725','subnet-0757fdbdf83eab14f','subnet-0757fdbdf83eab14f']
+      Tags: 
+      - 
+        Key: "Name"
+        Value: "AsGroupNightShift"   
+        PropagateAtLaunch: False 
+      - 
+        Key: "Project"
+        Value: "App2_NightShift"
+        PropagateAtLaunch: True 
+      - 
+        Key: "Scheduler:Flag"
+        Value: True
+        PropagateAtLaunch: True      
+      - 
+        Key: "Scheduler:Timings"
+        Value: "2000:0600"
+        PropagateAtLaunch: True         
+      - 
+        Key: "Scheduler:WeekDays"
+        Value: "weekworkdays"
+        PropagateAtLaunch: True         
+      - 
+        Key: "Scheduler:OverRide"
+        Value: ""
+        PropagateAtLaunch: True   
+  Ec2TestForSchedulerMultipleProjectsNight:
+    Type: 'AWS::EC2::Instance'
+    Properties:
+      KeyName: 'Ec2AdminLearn'
+      InstanceType: 't2.micro'
+      LaunchTemplate:
+        LaunchTemplateId: 'lt-0f90c58cbd358de7e'
+        Version: '8'
+      Tags: 
+      - 
+        Key: "Name"
+        Value: "Ec2_MultipleProjects_Night"      
+      - 
+        Key: "Project"
+        Value: "App_Ec2Only,App2_NightShift"
+      - 
+        Key: "Scheduler:Flag"
+        Value: True
+      -         
+        Key: "Scheduler:Timings"
+        Value: "2000:0600"
+      - 
+        Key: "Scheduler:WeekDays"
+        Value: "weekworkdays"
+      - 
+        Key: "Scheduler:OverRide"
+        Value: ""        
+  Ec2TestForSchedulerWeekEnd:
+    Type: 'AWS::EC2::Instance'
+    Properties:
+      KeyName: 'Ec2AdminLearn'
+      InstanceType: 't2.micro'
+      LaunchTemplate:
+        LaunchTemplateId: 'lt-0f90c58cbd358de7e'
+        Version: '8'
+      Tags: 
+      - 
+        Key: "Name"
+        Value: "Ec2_WeekEnd"    
+      - 
+        Key: "Project"
+        Value: "App_Ec2Only"
+      - 
+        Key: "Scheduler:Flag"
+        Value: True
+      - 
+        Key: "Scheduler:Timings"
+        Value: "0600:2000"
+      - 
+        Key: "Scheduler:WeekDays"
+        Value: "sat,sun"
+      - 
+        Key: "Scheduler:OverRide"
+        Value: ""
+  Ec2TestForSchedulerMultipleProjectsNonStop:
+    Type: 'AWS::EC2::Instance'
+    Properties:
+      KeyName: 'Ec2AdminLearn'
+      InstanceType: 't2.micro'
+      LaunchTemplate:
+        LaunchTemplateId: 'lt-0f90c58cbd358de7e'
+        Version: '8'
+      Tags: 
+      - 
+        Key: "Name"
+        Value: "Ec2_MultipleProjects_NonStop"    
+      - 
+        Key: "Project"
+        Value: "App_Ec2Only,App1_DayShift"
+      - 
+        Key: "Scheduler:Flag"
+        Value: True
+      - 
+        Key: "Scheduler:Timings"
+        Value: "0000:0000"
+      - 
+        Key: "Scheduler:WeekDays"
+        Value: "all"
+      - 
+        Key: "Scheduler:OverRide"
+        Value: ""
+  Ec2TestForSchedulerNonStopWeekEnd:
+    Type: 'AWS::EC2::Instance'
+    Properties:
+      KeyName: 'Ec2AdminLearn'
+      InstanceType: 't2.micro'
+      LaunchTemplate:
+        LaunchTemplateId: 'lt-0f90c58cbd358de7e'
+        Version: '8'
+      Tags: 
+      - 
+        Key: "Name"
+        Value: "Ec2_NonStopWeekEnd"    
+      - 
+        Key: "Project"
+        Value: "App_Ec2Only"
+      - 
+        Key: "Scheduler:Flag"
+        Value: True
+      - 
+        Key: "Scheduler:Timings"
+        Value: "0000:0000"
+      - 
+        Key: "Scheduler:WeekDays"
+        Value: "sat,sun"
+      - 
+        Key: "Scheduler:OverRide"
+        Value: ""
+  Ec2TestForSchedulerNightOverRideOn:
+    Type: 'AWS::EC2::Instance'
+    Properties:
+      KeyName: 'Ec2AdminLearn'
+      InstanceType: 't2.micro'
+      LaunchTemplate:
+        LaunchTemplateId: 'lt-0f90c58cbd358de7e'
+        Version: '8'
+      Tags: 
+      - 
+        Key: "Name"
+        Value: "Ec2_NightOverRideOn"      
+      - 
+        Key: "Project"
+        Value: "App_Ec2Only"
+      - 
+        Key: "Scheduler:Flag"
+        Value: True
+      - 
+        Key: "Scheduler:Timings"
+        Value: "2000:0600"
+      - 
+        Key: "Scheduler:WeekDays"
+        Value: "weekworkdays"
+      - 
+        Key: "Scheduler:OverRide"
+        Value: "22-02-2020"       
+  Ec2TestForSchedulerNightOverRideOff:
+    Type: 'AWS::EC2::Instance'
+    Properties:
+      KeyName: 'Ec2AdminLearn'
+      InstanceType: 't2.micro'
+      LaunchTemplate:
+        LaunchTemplateId: 'lt-0f90c58cbd358de7e'
+        Version: '8'
+      Tags: 
+      - 
+        Key: "Name"
+        Value: "Ec2_NightOverRideOff"      
+      - 
+        Key: "Project"
+        Value: "App_Ec2Only"
+      - 
+        Key: "Scheduler:Flag"
+        Value: True
+      - 
+        Key: "Scheduler:Timings"
+        Value: "2000:0600"
+      - 
+        Key: "Scheduler:WeekDays"
+        Value: "weekworkdays"
+      - 
+        Key: "Scheduler:OverRide"
+        Value: "02-01-2020"  
+  Ec2TestForSchedulerTagErrors1:
+    Type: 'AWS::EC2::Instance'
+    Properties:
+      KeyName: 'Ec2AdminLearn'
+      InstanceType: 't2.micro'
+      LaunchTemplate:
+        LaunchTemplateId: 'lt-0f90c58cbd358de7e'
+        Version: '8'
+      Tags: 
+      - 
+        Key: "Name"
+        Value: "Ec2_TagErrors1"      
+      - 
+        Key: "Project"
+        Value: "App_Ec2Only"
+      - 
+        Key: "Scheduler:Flag"
+        Value: True
+      - 
+        Key: "Scheduler:Timings"
+        Value: "0000,0600"
+      - 
+        Key: "Scheduler:WeekDays"
+        Value: "weekworkdays"
+      - 
+        Key: "Scheduler:OverRide"
+        Value: ""  
+  Ec2TestForSchedulerTagErrors2:
+    Type: 'AWS::EC2::Instance'
+    Properties:
+      KeyName: 'Ec2AdminLearn'
+      InstanceType: 't2.micro'
+      LaunchTemplate:
+        LaunchTemplateId: 'lt-0f90c58cbd358de7e'
+        Version: '8'
+      Tags: 
+      - 
+        Key: "Name"
+        Value: "Ec2_TagErrors2"      
+      - 
+        Key: "Project"
+        Value: "App_Ec2Only"
+      - 
+        Key: "Scheduler:Flag"
+        Value: True
+      - 
+        Key: "Scheduler:Timings"
+        Value: "0000:0600"
+      - 
+        Key: "Scheduler:WeekDays"
+        Value: "week"
+      - 
+        Key: "Scheduler:OverRide"
+        Value: ""  
+  Ec2TestForSchedulerTimeTest:
+    Type: 'AWS::EC2::Instance'
+    Properties:
+      KeyName: 'Ec2AdminLearn'
+      InstanceType: 't2.micro'
+      LaunchTemplate:
+        LaunchTemplateId: 'lt-0f90c58cbd358de7e'
+        Version: '8'
+      Tags: 
+      - 
+        Key: "Name"
+        Value: "Ec2_TimeTest"      
+      - 
+        Key: "Project"
+        Value: "App_Ec2Only"
+      - 
+        Key: "Scheduler:Flag"
+        Value: True
+      - 
+        Key: "Scheduler:Timings"
+        Value: "1100:1110"
+      - 
+        Key: "Scheduler:WeekDays"
+        Value: "weekworkdays"
+      - 
+        Key: "Scheduler:OverRide"
+        Value: ""  
