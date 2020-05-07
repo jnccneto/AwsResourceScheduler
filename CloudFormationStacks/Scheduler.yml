@@ -159,8 +159,8 @@ Resources:
  EventToExec: 
       Type: AWS::Events::Rule
       Properties: 
-        Description: "cron(0/5 * * * ? *)"
-        ScheduleExpression: "rate(1 minute)"
+        Description: "Exec every 5 Minutes"
+        ScheduleExpression: "rate(5 minute)"
         State: "ENABLED"
         Targets: 
           - 
