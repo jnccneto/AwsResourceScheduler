@@ -87,35 +87,67 @@ Resources:
      RoleName: LambdaSchedulerExecFn
 
 
- LambdaSchedulerExecStartStopPolicy:
+ LambdaSchedulerExecStartStopPolicyEC2:
     Type: 'AWS::IAM::ManagedPolicy'
     Properties:
-      ManagedPolicyName: LambdaSchedulerExecStartStop
+      ManagedPolicyName: LambdaSchedulerExecStartStopEC2
       Roles:
        - !Ref LambdaSchedulerExecFnRole
       PolicyDocument:
         Version: 2012-10-17
         Statement:
-            - Sid: VisualEditor0
-              Effect: Allow
+            - Effect: Allow
               Action: 
                   - ec2:StartInstances
                   - ec2:StopInstances
-                  - ec2:DescribeInstances
+                  - ec2:DescribeInstances  
+              Resource: "*"
+              Condition:
+                 StringEquals:
+                   "ec2:ResourceTag/Scheduler:Flag": "true"     
+
+
+ LambdaSchedulerExecStartStopPolicyRDS:
+    Type: 'AWS::IAM::ManagedPolicy'
+    Properties:
+      ManagedPolicyName: LambdaSchedulerExecStartStopRDS
+      Roles:
+       - !Ref LambdaSchedulerExecFnRole
+      PolicyDocument:
+        Version: 2012-10-17
+        Statement:
+            - Effect: Allow
+              Action: 
                   - rds:DescribeDBClusters
                   - rds:DescribeDBInstances                
                   - rds:StartDBInstance
                   - rds:StartDBCluster
                   - rds:StopDBCluster
-                  - rds:StopDBInstance
+                  - rds:StopDBInstance   
+              Resource: "*"
+              Condition:
+                 StringEquals:
+                   "rds:ResourceTag/Scheduler:Flag": "true"  
+
+ LambdaSchedulerExecStartStopPolicyAsGrp:
+    Type: 'AWS::IAM::ManagedPolicy'
+    Properties:
+      ManagedPolicyName: LambdaSchedulerExecStartStopAsGrp
+      Roles:
+       - !Ref LambdaSchedulerExecFnRole
+      PolicyDocument:
+        Version: 2012-10-17
+        Statement:
+            - Effect: Allow
+              Action: 
                   - autoscaling:DescribeAutoScalingInstances
                   - autoscaling:DescribeAutoScalingGroups
                   - autoscaling:UpdateAutoScalingGroup     
               Resource: "*"
-              StringEquals: 
-                - ec2:ResourceTag/Scheduler:Flag: true
-                - rds:ResourceTag/Scheduler:Flag: true            
-                
+              Condition:
+                 StringEquals:
+                   "autoscaling:ResourceTag/Scheduler:Flag": "true"  
+                                                           
 #####################################################
 ## LAMBDA
 #####################################################
