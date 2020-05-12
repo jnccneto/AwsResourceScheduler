@@ -188,6 +188,20 @@ Resources:
 ## CloudWatch Events
 #####################################################
 
+ DebugEventToExec: 
+      Type: AWS::Events::Rule
+      Properties: 
+        Description: "Exec every 1 Minute"
+        ScheduleExpression: "rate(1 minute)"
+        State: "ENABLED"
+        Targets: 
+          - 
+            Arn: 
+              Fn::GetAtt: 
+                - "SchedulerCheckAndApply"
+                - "Arn"
+            Id: "TargetSchedulerCheckAndApply"
+            
  EventToExec: 
       Type: AWS::Events::Rule
       Properties: 
