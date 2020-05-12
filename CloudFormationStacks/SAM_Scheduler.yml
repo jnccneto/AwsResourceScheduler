@@ -1,4 +1,5 @@
 AWSTemplateFormatVersion: "2010-09-09"
+Transform: AWS::Serverless-2016-10-31
 Description: "API Gateway and Lambda function"
 Resources:
 
@@ -79,43 +80,11 @@ Resources:
               Action: sts:AssumeRole
      Description: LambdaSchedulerExecFn
      ManagedPolicyArns:
-     - arn:aws:iam::aws:policy/AmazonEC2ReadOnlyAccess
-     - arn:aws:iam::aws:policy/AmazonRDSReadOnlyAccess     
-     #- arn:aws:iam::aws:policy/AmazonRDSFullAccess
-     #- arn:aws:iam::aws:policy/AmazonEC2FullAccess
+     - arn:aws:iam::aws:policy/AmazonRDSFullAccess
+     - arn:aws:iam::aws:policy/AmazonEC2FullAccess
      - arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole
      RoleName: LambdaSchedulerExecFn
 
-
- LambdaSchedulerExecStartStopPolicy:
-    Type: 'AWS::IAM::ManagedPolicy'
-    Properties:
-      ManagedPolicyName: LambdaSchedulerExecStartStop
-      Roles:
-       - !Ref LambdaSchedulerExecFnRole
-      PolicyDocument:
-        Version: 2012-10-17
-        Statement:
-            - Sid: VisualEditor0
-              Effect: Allow
-              Action: 
-                  - ec2:StartInstances
-                  - ec2:StopInstances
-                  - ec2:DescribeInstances
-                  - rds:DescribeDBClusters
-                  - rds:DescribeDBInstances                
-                  - rds:StartDBInstance
-                  - rds:StartDBCluster
-                  - rds:StopDBCluster
-                  - rds:StopDBInstance
-                  - autoscaling:DescribeAutoScalingInstances
-                  - autoscaling:DescribeAutoScalingGroups
-                  - autoscaling:UpdateAutoScalingGroup     
-              Resource: "*"
-              StringEquals: 
-                - ec2:ResourceTag/Scheduler:Flag: true
-                - rds:ResourceTag/Scheduler:Flag: true            
-                
 #####################################################
 ## LAMBDA
 #####################################################
