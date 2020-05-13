@@ -136,7 +136,7 @@ jobs:
             echo "DEBUG"
             aws cloudformation list-exports  | grep -A 3 "ExportingStackId.*/Scheduler/" 
             echo "Getting apiGatewayID"
-            apiGatewayID=$(aws cloudformation list-exports  | grep -A 3 "ExportingStackId.*/Scheduler/" | grep -A 1 apiGatewayID | tail -n 1 | cut --fields=2 --delimiter=: | tr --delete \" | tr --delete " ")
+            apiGatewayID=$(aws cloudformation list-exports  | grep -A 3 "ExportingStackId.*/Scheduler/" | grep -A 1 apiGatewayID | sed -n 's/"Value": "\([a-z0-9]\+\)"/\1/p' | sed 's/^ *//g')
             echo "apiGatewayID: ${apiGatewayID}"
             aws apigateway get-sdk --rest-api-id ${apiGatewayID} --stage-name Prod --sdk-type javascript ApiGw-js-sdk.zip
     - name: unzip sdk
