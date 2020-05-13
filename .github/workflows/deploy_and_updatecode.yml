@@ -162,4 +162,6 @@ jobs:
     - name: cognito user setup
       run: |   
             cognitoUserPoolID=$(aws cloudformation list-exports --query "Exports[?Name=='cognitoUserPoolID'].Value" --no-paginate --output text )
-            aws cognito-idp admin-set-user-password --user-pool-id $cognitoUserPoolID --username "dashboard1" --password demodemo --permanent
+            Passwd=$(head /dev/urandom | tr -dc A-Za-z0-9 | head -c 8)
+            aws cognito-idp admin-set-user-password --user-pool-id $cognitoUserPoolID --username "dashboard" --password $Passwd --permanent
+            echo " Created username:dashboard Passwd:${Passwd}"
