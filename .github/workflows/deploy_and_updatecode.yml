@@ -133,7 +133,7 @@ jobs:
         
     - name: apigateway get-sdk
       run: |     
-            apiGatewayID=$(aws cloudformation list-exports --query "Exports[?Name=='apiGatewayID'].Value" --no-paginate --output text )
+            apiGatewayID=$(aws cloudformation list-exports  | grep -A 3 "ExportingStackId.*/Scheduler/" | grep -A 1 apiGatewayID | tail -n 1 | cut --fields=2 --delimiter=: | tr --delete \" | tr --delete " ")
             echo "apiGatewayID: $apiGatewayID"
             aws apigateway get-sdk --rest-api-id ${apiGatewayID} --stage-name Prod --sdk-type javascript ApiGw-js-sdk.zip
 
