@@ -450,10 +450,10 @@ Resources:
     - COGNITO
    UserPoolId: !Ref cognitoUserPool
 
- UserDashboard1:
+ UserDashboard:
   Type: AWS::Cognito::UserPoolUser
   Properties: 
-   Username: dashboard1
+   Username: dashboard
    UserPoolId: !Ref cognitoUserPool
     
 
