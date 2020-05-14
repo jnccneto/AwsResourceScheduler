@@ -1,15 +1,31 @@
 Resources:
+
+  LaunchTemplateEc2Basic:
+    Type: AWS::EC2::LaunchTemplate
+    Properties: 
+      LaunchTemplateData: 
+        DisableApiTermination: false
+        ImageId: ami-01f14919ba412de34
+        InstanceType: t2.micro
+      LaunchTemplateName: Ec2BasicForSchedulerTest
+
+
+
   Ec2AsGroupDayShift:
     Type: AWS::AutoScaling::AutoScalingGroup
     Properties: 
       AutoScalingGroupName: 'AsGroupDayShift'
       DesiredCapacity: 1
       LaunchTemplate:
-        LaunchTemplateId: 'lt-0f90c58cbd358de7e'
-        Version: '8'
+        LaunchTemplateId: 
+          Ref: LaunchTemplateEc2Basic
+        Version: 1
       MaxSize: 2
       MinSize: 1
+###### LEARNING ENV #########################################################################################      
       VPCZoneIdentifier: ['subnet-00492ef6e969fb725','subnet-0757fdbdf83eab14f','subnet-0757fdbdf83eab14f']
+###### TESTING ENV #########################################################################################
+#      VPCZoneIdentifier: ['subnet-2ecc5f58','subnet-09f5936d','subnet-5063c308']      
       Tags: 
       - 
         Key: "Name"
@@ -41,11 +57,15 @@ Resources:
       AutoScalingGroupName: 'AsGroupNightShift'
       DesiredCapacity: 1
       LaunchTemplate:
-        LaunchTemplateId: 'lt-0f90c58cbd358de7e'
-        Version: '8'
+        LaunchTemplateId: 
+          Ref: LaunchTemplateEc2Basic
+        Version: 1
       MaxSize: 2
       MinSize: 1
+###### LEARNING ENV #########################################################################################      
       VPCZoneIdentifier: ['subnet-00492ef6e969fb725','subnet-0757fdbdf83eab14f','subnet-0757fdbdf83eab14f']
+###### TESTING ENV #########################################################################################
+#      VPCZoneIdentifier: ['subnet-2ecc5f58','subnet-09f5936d','subnet-5063c308']    
       Tags: 
       - 
         Key: "Name"
@@ -74,11 +94,11 @@ Resources:
   Ec2TestForSchedulerMultipleProjectsNight:
     Type: 'AWS::EC2::Instance'
     Properties:
-      KeyName: 'Ec2AdminLearn'
       InstanceType: 't2.micro'
       LaunchTemplate:
-        LaunchTemplateId: 'lt-0f90c58cbd358de7e'
-        Version: '8'
+        LaunchTemplateId: 
+          Ref: LaunchTemplateEc2Basic
+        Version: 1
       Tags: 
       - 
         Key: "Name"
@@ -101,11 +121,11 @@ Resources:
   Ec2TestForSchedulerWeekEnd:
     Type: 'AWS::EC2::Instance'
     Properties:
-      KeyName: 'Ec2AdminLearn'
       InstanceType: 't2.micro'
       LaunchTemplate:
-        LaunchTemplateId: 'lt-0f90c58cbd358de7e'
-        Version: '8'
+        LaunchTemplateId: 
+          Ref: LaunchTemplateEc2Basic
+        Version: 1
       Tags: 
       - 
         Key: "Name"
@@ -128,11 +148,11 @@ Resources:
   Ec2TestForSchedulerMultipleProjectsNonStop:
     Type: 'AWS::EC2::Instance'
     Properties:
-      KeyName: 'Ec2AdminLearn'
       InstanceType: 't2.micro'
       LaunchTemplate:
-        LaunchTemplateId: 'lt-0f90c58cbd358de7e'
-        Version: '8'
+        LaunchTemplateId: 
+          Ref: LaunchTemplateEc2Basic
+        Version: 1
       Tags: 
       - 
         Key: "Name"
@@ -155,11 +175,11 @@ Resources:
   Ec2TestForSchedulerNonStopWeekEnd:
     Type: 'AWS::EC2::Instance'
     Properties:
-      KeyName: 'Ec2AdminLearn'
       InstanceType: 't2.micro'
       LaunchTemplate:
-        LaunchTemplateId: 'lt-0f90c58cbd358de7e'
-        Version: '8'
+        LaunchTemplateId: 
+          Ref: LaunchTemplateEc2Basic
+        Version: 1
       Tags: 
       - 
         Key: "Name"
@@ -182,11 +202,11 @@ Resources:
   Ec2TestForSchedulerNightOverRideOn:
     Type: 'AWS::EC2::Instance'
     Properties:
-      KeyName: 'Ec2AdminLearn'
       InstanceType: 't2.micro'
       LaunchTemplate:
-        LaunchTemplateId: 'lt-0f90c58cbd358de7e'
-        Version: '8'
+        LaunchTemplateId: 
+          Ref: LaunchTemplateEc2Basic
+        Version: 1
       Tags: 
       - 
         Key: "Name"
@@ -209,11 +229,11 @@ Resources:
   Ec2TestForSchedulerNightOverRideOff:
     Type: 'AWS::EC2::Instance'
     Properties:
-      KeyName: 'Ec2AdminLearn'
       InstanceType: 't2.micro'
       LaunchTemplate:
-        LaunchTemplateId: 'lt-0f90c58cbd358de7e'
-        Version: '8'
+        LaunchTemplateId: 
+          Ref: LaunchTemplateEc2Basic
+        Version: 1
       Tags: 
       - 
         Key: "Name"
@@ -236,11 +256,11 @@ Resources:
   Ec2TestForSchedulerTagErrors1:
     Type: 'AWS::EC2::Instance'
     Properties:
-      KeyName: 'Ec2AdminLearn'
       InstanceType: 't2.micro'
       LaunchTemplate:
-        LaunchTemplateId: 'lt-0f90c58cbd358de7e'
-        Version: '8'
+        LaunchTemplateId: 
+          Ref: LaunchTemplateEc2Basic
+        Version: 1
       Tags: 
       - 
         Key: "Name"
@@ -263,11 +283,11 @@ Resources:
   Ec2TestForSchedulerTagErrors2:
     Type: 'AWS::EC2::Instance'
     Properties:
-      KeyName: 'Ec2AdminLearn'
       InstanceType: 't2.micro'
       LaunchTemplate:
-        LaunchTemplateId: 'lt-0f90c58cbd358de7e'
-        Version: '8'
+        LaunchTemplateId: 
+          Ref: LaunchTemplateEc2Basic
+        Version: 1
       Tags: 
       - 
         Key: "Name"
@@ -290,11 +310,11 @@ Resources:
   Ec2TestForSchedulerTimeTest:
     Type: 'AWS::EC2::Instance'
     Properties:
-      KeyName: 'Ec2AdminLearn'
       InstanceType: 't2.micro'
       LaunchTemplate:
-        LaunchTemplateId: 'lt-0f90c58cbd358de7e'
-        Version: '8'
+        LaunchTemplateId: 
+          Ref: LaunchTemplateEc2Basic
+        Version: 1
       Tags: 
       - 
         Key: "Name"
@@ -314,6 +334,7 @@ Resources:
       - 
         Key: "Scheduler:OverRide"
         Value: ""  
+
   RdsDBDayShift:
     Type: AWS::RDS::DBInstance
     Properties: 
