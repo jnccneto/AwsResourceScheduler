@@ -33,8 +33,7 @@ Resources:
       PolicyDocument:
         Version: 2012-10-17
         Statement:
-            - Sid: VisualEditor0
-              Effect: Allow
+            - Effect: Allow
               Action: 
                 - rds:AddTagsToResource
                 - rds:ListTagsForResource
@@ -43,8 +42,7 @@ Resources:
               Condition:
                  StringEquals:
                    "rds:ResourceTag/Scheduler:Flag": "true"  
-            - Sid: VisualEditor0
-              Effect: Allow
+            - Effect: Allow
               Action: 
                 - ec2:CreateTags
                 - ec2:DeleteTags
@@ -52,8 +50,8 @@ Resources:
               Condition:
                  StringEquals:
                    "ec2:ResourceTag/Scheduler:Flag": "true"   
-            - Sid: VisualEditor0
-              Effect: Allow
+            - Effect: Allow
+              Action: 
               Action: 
                   - autoscaling:DeleteTags
                   - autoscaling:CreateOrUpdateTags
