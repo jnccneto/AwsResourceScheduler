@@ -23,7 +23,7 @@ Resources:
      - arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole
      RoleName: LambdaSchedulerApiFn
 
- LambdaSchedulerApiFnPolicyRdsAddTags:
+ LambdaSchedulerPolicyAddTags:
     Type: 'AWS::IAM::ManagedPolicy'
     Properties:
       ManagedPolicyName: RdsAddTags
@@ -35,40 +35,23 @@ Resources:
         Statement:
             - Sid: VisualEditor0
               Effect: Allow
-              Action: rds:AddTagsToResource
+              Action: 
+                - rds:AddTagsToResource
+                - rds:ListTagsForResource
+                - rds:RemoveTagsFromResource                                
               Resource: "*"
               Condition:
                  StringEquals:
                    "rds:ResourceTag/Scheduler:Flag": "true"  
-                                 
- LambdaSchedulerApiFnPolicyEc2AddTags:
-    Type: 'AWS::IAM::ManagedPolicy'
-    Properties:
-      ManagedPolicyName: Ec2AddTags
-      Roles:
-       - !Ref LambdaSchedulerApiFnRole
-       - !Ref LambdaSchedulerExecFnRole  
-      PolicyDocument:
-        Version: 2012-10-17
-        Statement:
             - Sid: VisualEditor0
               Effect: Allow
-              Action: ec2:CreateTags
+              Action: 
+                - ec2:CreateTags
+                - ec2:DeleteTags
               Resource: "*"
               Condition:
                  StringEquals:
                    "ec2:ResourceTag/Scheduler:Flag": "true"   
-                                 
- LambdaSchedulerApiFnPolicyAsGrpAddTags:
-    Type: 'AWS::IAM::ManagedPolicy'
-    Properties:
-      ManagedPolicyName: AsGrpAddTags
-      Roles:
-       - !Ref LambdaSchedulerApiFnRole
-       - !Ref LambdaSchedulerExecFnRole  
-      PolicyDocument:
-        Version: 2012-10-17
-        Statement:
             - Sid: VisualEditor0
               Effect: Allow
               Action: 
