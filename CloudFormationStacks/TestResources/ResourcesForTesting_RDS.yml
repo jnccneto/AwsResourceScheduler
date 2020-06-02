@@ -23,9 +23,9 @@ Resources:
       MaxSize: 2
       MinSize: 1
 ###### LEARNING ENV #########################################################################################      
-      VPCZoneIdentifier: ['subnet-00492ef6e969fb725','subnet-0757fdbdf83eab14f','subnet-0757fdbdf83eab14f']
+#      VPCZoneIdentifier: ['subnet-00492ef6e969fb725','subnet-0757fdbdf83eab14f','subnet-0757fdbdf83eab14f']
 ###### TESTING ENV #########################################################################################
-#      VPCZoneIdentifier: ['subnet-2ecc5f58','subnet-09f5936d','subnet-5063c308']      
+      VPCZoneIdentifier: ['subnet-2ecc5f58','subnet-09f5936d','subnet-5063c308']      
       Tags: 
       - 
         Key: "Name"
@@ -63,9 +63,9 @@ Resources:
       MaxSize: 2
       MinSize: 1
 ###### LEARNING ENV #########################################################################################      
-      VPCZoneIdentifier: ['subnet-00492ef6e969fb725','subnet-0757fdbdf83eab14f','subnet-0757fdbdf83eab14f']
+#      VPCZoneIdentifier: ['subnet-00492ef6e969fb725','subnet-0757fdbdf83eab14f','subnet-0757fdbdf83eab14f']
 ###### TESTING ENV #########################################################################################
-#      VPCZoneIdentifier: ['subnet-2ecc5f58','subnet-09f5936d','subnet-5063c308']    
+      VPCZoneIdentifier: ['subnet-2ecc5f58','subnet-09f5936d','subnet-5063c308']    
       Tags: 
       - 
         Key: "Name"

@@ -120,6 +120,7 @@ Resources:
               Condition:
                  StringEquals:
                    "rds:ResourceTag/Scheduler:Flag": "true"  
+                   
 
  LambdaSchedulerExecStartStopPolicyAsGrp:
     Type: 'AWS::IAM::ManagedPolicy'
