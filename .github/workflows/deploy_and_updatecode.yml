@@ -43,7 +43,7 @@ jobs:
         
     - name: CloudFormation Deploy S3 Stacks
       run: | 
-        aws cloudformation deploy  --stack-name Scheduler_S3 --template-file CloudFormationStacks/Scheduler_S3.yml --no-fail-on-empty-changeset
+        aws cloudformation deploy  --stack-name Scheduler-S3 --template-file CloudFormationStacks/Scheduler_S3.yml --no-fail-on-empty-changeset
     - name: Copy files to S3 with the AWS CLI
       run: |
         ARN=$(aws cloudformation list-exports --query "Exports[?Name=='CodeSourceBucketARN'].Value" --no-paginate --output text )
@@ -54,7 +54,7 @@ jobs:
         aws s3 cp SchedulerFunctions.zip s3://$BucketName        
     - name: CloudFormation Deploy Scheduler Stack
       run: | 
-        aws cloudformation deploy  --stack-name Scheduler_App --template-file CloudFormationStacks/Scheduler_App.yml --no-fail-on-empty-changeset --capabilities CAPABILITY_NAMED_IAM
+        aws cloudformation deploy  --stack-name Scheduler-App --template-file CloudFormationStacks/Scheduler_App.yml --no-fail-on-empty-changeset --capabilities CAPABILITY_NAMED_IAM
 
 
   python_update_code:
