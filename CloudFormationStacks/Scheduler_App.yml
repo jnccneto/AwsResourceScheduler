@@ -41,7 +41,7 @@ Resources:
               Resource: "*"
               Condition:
                  StringEquals:
-                   "rds:ResourceTag/Scheduler:Flag": "true"  
+                   "rds:db-tag/Scheduler:Flag": "true"  
             - Effect: Allow
               Action: 
                 - ec2:CreateTags
@@ -119,7 +119,7 @@ Resources:
               Resource: "*"
               Condition:
                  StringEquals:
-                   "rds:ResourceTag/Scheduler:Flag": "true"  
+                   "rds:db-tag/Scheduler:Flag": "true"  
                    
 
  LambdaSchedulerExecStartStopPolicyAsGrp:
