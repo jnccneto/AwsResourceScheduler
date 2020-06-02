@@ -134,11 +134,11 @@ jobs:
     - name: apigateway get-sdk
       run: |     
             echo "DEBUG"
-            aws cloudformation list-exports  | grep -A 3 "ExportingStackId.*/Scheduler/" 
-            aws cloudformation list-exports  | grep -A 3 "ExportingStackId.*/Scheduler/" | grep  -A 1 -B 1 apiGatewayID 
-            aws cloudformation list-exports  | grep -A 3 "ExportingStackId.*/Scheduler/" | grep  -A 1 -B 1 apiGatewayID | sed -n 's/"Value": "\([a-z0-9]\+\)"/\1/p' | sed 's/^ *//g'
+            aws cloudformation list-exports  | grep -A 3 "ExportingStackId.*/Scheduler-App/" 
+            aws cloudformation list-exports  | grep -A 3 "ExportingStackId.*/Scheduler-App/" | grep  -A 1 -B 1 apiGatewayID 
+            aws cloudformation list-exports  | grep -A 3 "ExportingStackId.*/Scheduler-App/" | grep  -A 1 -B 1 apiGatewayID | sed -n 's/"Value": "\([a-z0-9]\+\)"/\1/p' | sed 's/^ *//g'
             echo "Getting apiGatewayID"
-            apiGatewayID=$(aws cloudformation list-exports  | grep -A 3 "ExportingStackId.*/Scheduler/" | grep  -A 1 -B 1 apiGatewayID | sed -n 's/"Value": "\([a-z0-9]\+\)"/\1/p' | sed 's/^ *//g' | sed 's/,//g')
+            apiGatewayID=$(aws cloudformation list-exports  | grep -A 3 "ExportingStackId.*/Scheduler-App/" | grep  -A 1 -B 1 apiGatewayID | sed -n 's/"Value": "\([a-z0-9]\+\)"/\1/p' | sed 's/^ *//g' | sed 's/,//g')
             echo "apiGatewayID: ${apiGatewayID}"
             echo "aws apigateway get-sdk --rest-api-id ${apiGatewayID} --stage-name Prod --sdk-type javascript ApiGw-js-sdk.zip"
             aws apigateway get-sdk --rest-api-id ${apiGatewayID} --stage-name Prod --sdk-type javascript ApiGw-js-sdk.zip
@@ -150,10 +150,10 @@ jobs:
     - name: javascript code update
       run: |     
             #cognitoUserPoolID=$(aws cloudformation list-exports --query "Exports[?Name=='cognitoUserPoolID'].Value" --no-paginate --output text )
-            cognitoUserPoolID=$(aws cloudformation list-exports  | grep -A 3 "ExportingStackId.*/Scheduler/" | grep -A 1 -B 1 cognitoUserPoolID | sed -n 's/"Value": .*"\([a-zA-Z0-9-]\+_[a-zA-Z0-9]\+\)"/\1/p' | sed 's/ *//g' | sed 's/,//g')
+            cognitoUserPoolID=$(aws cloudformation list-exports  | grep -A 3 "ExportingStackId.*/Scheduler-App/" | grep -A 1 -B 1 cognitoUserPoolID | sed -n 's/"Value": .*"\([a-zA-Z0-9-]\+_[a-zA-Z0-9]\+\)"/\1/p' | sed 's/ *//g' | sed 's/,//g')
             echo "cognitoUserPoolID: $cognitoUserPoolID"
             sed -i "s/userPoolId:.*'[a-zA-Z0-9-]\+_[a-zA-Z0-9]\+',/userPoolId:'$cognitoUserPoolID',/" DashBoard/src/cognitoFn.js
-            UserPoolClientId=$(aws cloudformation list-exports  | grep -A 3 "ExportingStackId.*/Scheduler/" | grep -A 1 -B 1 UserPoolClientId | sed -n 's/"Value": .*"\([a-zA-Z0-9]\+\)"/\1/p' | sed 's/ *//g' | sed 's/,//g')
+            UserPoolClientId=$(aws cloudformation list-exports  | grep -A 3 "ExportingStackId.*/Scheduler-App/" | grep -A 1 -B 1 UserPoolClientId | sed -n 's/"Value": .*"\([a-zA-Z0-9]\+\)"/\1/p' | sed 's/ *//g' | sed 's/,//g')
             echo "UserPoolClientId: $UserPoolClientId"
             sed -i "s/userPoolWebClientId:.*'[a-zA-Z0-9]\+',/userPoolWebClientId:'$UserPoolClientId',/" DashBoard/src/cognitoFn.js
             sed -i "s/var CognitoWebClientId = '[a-zA-Z0-9]\+'/var CognitoWebClientId = '$UserPoolClientId'/" DashBoard/dist/index.html
@@ -167,7 +167,7 @@ jobs:
             aws s3api list-objects --bucket ${DashBoardBucketName} | awk '/Key/ { print $2 }' | sed 's/,//g'|sed 's/"//g' | while read FILE ; do aws s3api put-object-acl --acl public-read --bucket ${DashBoardBucketName} --key $FILE;done
     - name: cognito user setup
       run: |   
-            cognitoUserPoolID=$(aws cloudformation list-exports  | grep -A 3 "ExportingStackId.*/Scheduler/" | grep -A 1 -B 1 cognitoUserPoolID | sed -n 's/"Value": .*"\([a-zA-Z0-9-]\+_[a-zA-Z0-9]\+\)"/\1/p' | sed 's/^ *//g' | sed 's/,//g')
+            cognitoUserPoolID=$(aws cloudformation list-exports  | grep -A 3 "ExportingStackId.*/Scheduler-App/" | grep -A 1 -B 1 cognitoUserPoolID | sed -n 's/"Value": .*"\([a-zA-Z0-9-]\+_[a-zA-Z0-9]\+\)"/\1/p' | sed 's/^ *//g' | sed 's/,//g')
             Passwd=$(head /dev/urandom | tr -dc A-Za-z0-9 | head -c 8)
             aws cognito-idp admin-set-user-password --user-pool-id $cognitoUserPoolID --username "dashboard" --password $Passwd --permanent
             echo " Created username:dashboard Passwd:${Passwd}"
