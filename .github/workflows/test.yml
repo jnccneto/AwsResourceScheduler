@@ -15,6 +15,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
+    - name: Install puppeteer jest and exec
       run: |   
             npm i puppeteer
             npm i jest
