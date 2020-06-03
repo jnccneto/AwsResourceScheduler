@@ -17,9 +17,9 @@ jobs:
     - uses: actions/checkout@v2
     - name: cognito user setup
       run: |   
-            ::set-env name={DASHBOARD_URL}::{http://scheduler-s3-dashboardbucket-1q9saw9grfgsu.s3-website-eu-west-1.amazonaws.com/}
-            ::set-env name={DASHBOARD_USER}::{dashboard}
-            ::set-env name={DASHBOARD_PWD}::{DASHBOARD_PWD}
+            echo ::set-env name=DASHBOARD_URL::http://scheduler-s3-dashboardbucket-1q9saw9grfgsu.s3-website-eu-west-1.amazonaws.com/
+            echo ::set-env name=DASHBOARD_USER::dashboard
+            echo ::set-env name=DASHBOARD_PWD::123                        
     - name: Install puppeteer jest and exec
       run: |   
             npm i puppeteer
