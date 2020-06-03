@@ -13,12 +13,18 @@ Is an Application to automate and manage the start/stop of AWS Resources (EC2 | 
   - UserDashboard	dashboard
 	
 - AWS::ApiGateway::RestApi
-  -apiGateway	
+  - apiGateway	
 - AWS::ApiGateway::Method
   - updateMethod
 
 ### Frontend Javascript / S3
 
+- AWS::S3::Bucket
+  - CodeSourceBucket
+- AWS::S3::Bucket  
+  - DashBoardBucket
+  
+  
 
 ## Install 
 
