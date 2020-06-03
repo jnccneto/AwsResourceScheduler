@@ -23,9 +23,42 @@ Date=$(date +%D_%T); echo "DashBoard_setup $Date" > DeployTriggerFile.txt ; git 
 
 ## SetUp Resources
 
-Tags have to be added to resources so that scheduler app can start/stop at defined schedules:
+Tags have to be added to resources so that scheduler app can start/stop at defined schedules.
+TAGS:
 
-AsGroup tags
+        Key: "Name"
+        Value: "Resource Name Used in DashBoard Listing/Debuging"      
+
+        Key: "Project"
+        Value: "Resource Project Group Used in DashBoard for grouping resources"
+
+        Key: "Scheduler:Flag"
+        Value: True|False 
+        If True Resources is managed by Scheduler. If False or non existant, no action is taken
+
+        Key: "Scheduler:Timings"
+        Value: "0600:2000"
+        time interval when resource should be running. Configured Values:
+        "0600:2000","0900:1900","2000:0600"
+        
+        Key: "Scheduler:WeekDays"
+        Value: "weekworkdays"
+        week days when resource should be running. Configured Values:        
+        "all","weekworkdays","sat,sun"
+
+        Key: "Scheduler:OverRide"
+        Value: ""
+        Flag to overide the normal start/stop.
+        Must be set in DashBoard WebConsole and with a Date
+
+
+
+
+Below examples for adding to CloudFormation stacks
+
+
+
+AWS::AutoScaling::AutoScalingGroup TAGS
 
 
       Tags: 
@@ -57,7 +90,7 @@ AsGroup tags
         
         
         
-      Type: 'AWS::EC2::Instance'
+AWS::EC2::Instance TAGS
 
       Tags: 
       - 
@@ -79,7 +112,10 @@ AsGroup tags
         Key: "Scheduler:OverRide"
         Value: ""        
         
-    Type: AWS::RDS::DBInstance
+        
+        
+        
+AWS::RDS::DBInstance TAGS
 
      Tags: 
       - 
