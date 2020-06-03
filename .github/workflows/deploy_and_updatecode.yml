@@ -163,6 +163,9 @@ jobs:
             npx webpack
             DashBoardBucketName=$(aws cloudformation list-exports --query "Exports[?Name=='DashBoardBucketName'].Value" --no-paginate --output text )
             echo "DashBoardBucketName: $DashBoardBucketName"
+            DashBoardURL=$(aws cloudformation list-exports --query "Exports[?Name=='DashBoardURL'].Value" --no-paginate --output text )
+            echo "DashBoardURL: $DashBoardURL"
+            echo ::set-env name=DASHBOARD_URL::$DashBoardURL            
             aws s3 sync dist/ s3://${DashBoardBucketName} --exclude "node_modules/*" --exclude package-lock.json 
             aws s3api list-objects --bucket ${DashBoardBucketName} | awk '/Key/ { print $2 }' | sed 's/,//g'|sed 's/"//g' | while read FILE ; do aws s3api put-object-acl --acl public-read --bucket ${DashBoardBucketName} --key $FILE;done
     - name: cognito user setup
@@ -171,18 +174,11 @@ jobs:
             Passwd=$(head /dev/urandom | tr -dc A-Za-z0-9 | head -c 8)
             aws cognito-idp admin-set-user-password --user-pool-id $cognitoUserPoolID --username "dashboard" --password $Passwd --permanent
             echo " Created username:dashboard Passwd:${Passwd}"
-            echo ::set-env name=DASHBOARD_URL::http://scheduler-s3-dashboardbucket-1q9saw9grfgsu.s3-website-eu-west-1.amazonaws.com/
             echo ::set-env name=DASHBOARD_USER::dashboard
             echo ::set-env name=DASHBOARD_PWD::${Passwd}                        
-    - name: Install puppeteer jest and exec
+    - name: Install puppeteer jest and exec test
       run: |   
             npm i puppeteer
             npm i jest
             cd DashBoard/jest/
-            ls -l
-            env
             ../../node_modules/jest/bin/jest.js dasboard.spec.js
-#   - name: Run Jest
-#      uses: stefanoeb/jest-action@1.0.2
-#      with:
-#       jestArgs: DashBoard/jest/dasboard.spec.js
