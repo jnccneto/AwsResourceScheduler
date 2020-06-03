@@ -6,16 +6,15 @@
 const puppeteer = require('puppeteer')
 let browser
 let page
-jest.setTimeout(30000);
+jest.setTimeout(50000);
 
 
 beforeAll(async () => {
-  browser = await puppeteer.launch()
-  //browser = await puppeteer.launch({headless: false})
+  browser = await puppeteer.launch({headless: true})
   page = await browser.newPage()
 })
 
-describe('DashBoard Login Test', async () => {
+describe('DashBoard Login Test', () => {
   test('Login', async () => {  
   console.log('process.env.DASHBOARD_URL: ' + process.env.DASHBOARD_URL)	
   console.log('process.env.DASHBOARD_USER: ' + process.env.DASHBOARD_USER)
