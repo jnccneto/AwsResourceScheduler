@@ -41,7 +41,10 @@ A simple test with jest.js in included in the workflow
 
 Issue this comands to trigger an instalation 
 
-1. Instalation of Gateway API / Lambda / Cognito
+1. Clone the repo and cd into the root dir.
+
+
+2. Instalation of Gateway API / Lambda / Cognito
 
 ```bash
 Date=$(date +%D_%T); echo "infra_deploy $Date" > DeployTriggerFile.txt ; git add DeployTriggerFile.txt;git commit -m "Actions: infra_deploy ENV:LEARNING $Date";git push origin master
@@ -49,7 +52,7 @@ Date=$(date +%D_%T); echo "infra_deploy $Date" > DeployTriggerFile.txt ; git add
 
 
 
-2. Instalation of S3 / Javascript code for DashBoard
+3. Instalation of S3 / Javascript code for DashBoard
 
 ```bash
 Date=$(date +%D_%T); echo "DashBoard_setup $Date" > DeployTriggerFile.txt ; git add DeployTriggerFile.txt;git commit -m "Actions: DashBoard_setup ENV:LEARNING $Date";git push origin master
