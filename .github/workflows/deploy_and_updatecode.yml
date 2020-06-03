@@ -171,10 +171,11 @@ jobs:
             Passwd=$(head /dev/urandom | tr -dc A-Za-z0-9 | head -c 8)
             aws cognito-idp admin-set-user-password --user-pool-id $cognitoUserPoolID --username "dashboard" --password $Passwd --permanent
             echo " Created username:dashboard Passwd:${Passwd}"
-    - name: install puppeteer
+    - name: install puppeteer/jest
       run: |   
             npm i puppeteer
             npm install --save-dev jest
+            jest DashBoard/jest/dasboard.spec.js
     - name: Run Jest
       uses: stefanoeb/jest-action@1.0.2
       with:
