@@ -2,22 +2,22 @@
 
 Is an Application to automate and manage the start/stop of AWS Resources (EC2 | AsGroups |  RDS )
 
-###Backend in Python / Lambda / Gateway Api
+### Backend in Python / Lambda / Gateway Api
 
-AWS::Lambda::Function
-ResourcesApi
-SchedulerCheckAndApply
-SchedulerFunctionsLayer
+- AWS::Lambda::Function
+  - ResourcesApi
+  - SchedulerCheckAndApply
+  - SchedulerFunctionsLayer
 
-AWS::Cognito::UserPoolUser
-UserDashboard	dashboard
+- AWS::Cognito::UserPoolUser
+  - UserDashboard	dashboard
 	
-AWS::ApiGateway::RestApi
-apiGateway	
-AWS::ApiGateway::Method
-updateMethod
+- AWS::ApiGateway::RestApi
+  -apiGateway	
+- AWS::ApiGateway::Method
+  - updateMethod
 
-###Frontend Javascript / S3
+### Frontend Javascript / S3
 
 
 ## Install 
