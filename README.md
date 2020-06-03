@@ -35,8 +35,8 @@ Two step instalation is needed
 
 First Backend ( Gateway API / Lambda / Cognito ) resources and next the Frontend (Javascript/HTML)
 
-The Username Password is generated in the GitHb Action. It echoes in the github output console
-A simple test with jest in included in the workflow
+The Username Password is generated in the GitHub Action. It echoes in the github output console
+A simple test with jest.js in included in the workflow
 
 
 Issue this comands to trigger an instalation 
