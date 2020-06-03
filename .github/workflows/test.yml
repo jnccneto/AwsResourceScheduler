@@ -15,12 +15,18 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
+    - name: cognito user setup
+      run: |   
+            export DASHBOARD_URL="http://scheduler-s3-dashboardbucket-1q9saw9grfgsu.s3-website-eu-west-1.amazonaws.com/"
+            export DASHBOARD_USER="dashboard"
+            export DASHBOARD_PWD=${Passwd}    
     - name: Install puppeteer jest and exec
       run: |   
             npm i puppeteer
             npm i jest
             cd DashBoard/jest/
             ls -l
+            env
             ../../node_modules/jest/bin/jest.js dasboard.spec.js
 #   - name: Run Jest
 #      uses: stefanoeb/jest-action@1.0.2
