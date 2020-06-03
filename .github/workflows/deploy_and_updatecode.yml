@@ -173,8 +173,8 @@ jobs:
             echo " Created username:dashboard Passwd:${Passwd}"
     - name: install puppeteer/jest
       run: |   
-            npm i puppeteer
-            npm i jest
+            npm i -g puppeteer
+            npm i -g jest
             cd DashBoard/jest/
             ls -l
             jest dasboard.spec.js
