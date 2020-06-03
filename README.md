@@ -1,24 +1,54 @@
 # AWS Scheduler Info
- 
+
+Is an Application to automate and manage the start/stop of AWS Resources (EC2 | AsGroups |  RDS )
+
+###Backend in Python / Lambda / Gateway Api
+
+AWS::Lambda::Function
+ResourcesApi
+SchedulerCheckAndApply
+SchedulerFunctionsLayer
+
+AWS::Cognito::UserPoolUser
+UserDashboard	dashboard
+	
+AWS::ApiGateway::RestApi
+apiGateway	
+AWS::ApiGateway::Method
+updateMethod
+
+###Frontend Javascript / S3
+
 
 ## Install 
 
+
+Instalation is done through the workflow file in github.
+
 Two step instalation is needed
 
-First Gateway API / Lambda / Cognito resources and next the Javascript/HTML
+First Backend ( Gateway API / Lambda / Cognito ) resources and next the Frontend (Javascript/HTML)
 
 The Username Password is generated in the GitHb Action. It echoes in the github output console
+A simple test with jest in included in the workflow
 
 
 Issue this comands to trigger an instalation 
 
 1. Instalation of Gateway API / Lambda / Cognito
 
+```bash
 Date=$(date +%D_%T); echo "infra_deploy $Date" > DeployTriggerFile.txt ; git add DeployTriggerFile.txt;git commit -m "Actions: infra_deploy ENV:LEARNING $Date";git push origin master
+```
+
+
 
 2. Instalation of S3 / Javascript code for DashBoard
 
+```bash
 Date=$(date +%D_%T); echo "DashBoard_setup $Date" > DeployTriggerFile.txt ; git add DeployTriggerFile.txt;git commit -m "Actions: DashBoard_setup ENV:LEARNING $Date";git push origin master
+```
+
 
 
 ## SetUp Resources
