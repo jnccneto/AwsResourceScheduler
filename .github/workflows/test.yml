@@ -1,0 +1,27 @@
+name: TestCode
+on:
+  push:
+    branches:
+    - master
+    tags:        
+    - '*'
+    paths:
+    - '**.py'
+    - '*'
+
+jobs: 
+  DashBoard_Test:
+    if: "contains(github.event.head_commit.message, 'DashBoard_Test')"  
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+      run: |   
+            npm i puppeteer
+            npm i jest
+            cd DashBoard/jest/
+            ls -l
+            ../../node_modules/jest/bin/jest.js dasboard.spec.js
+#   - name: Run Jest
+#      uses: stefanoeb/jest-action@1.0.2
+#      with:
+#       jestArgs: DashBoard/jest/dasboard.spec.js
