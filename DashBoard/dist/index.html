@@ -84,9 +84,11 @@ var AsGroupType = "AsGrp"
 var Ec2Type = "ec2"
 var RdsType = "rds"
 
-var CognitoWebClientId = '3fuov3suubf1331c1qeddt5r4r'
+var CognitoWebClientId = '66mebtc4uqsu83rfnk72avfe9'
 var apigClient = apigClientFactory.newClient();
 var RefreshMsSecs = 6500000 //milliseconds
+
+var TestCheckElem = "TestOK"
 /////////////////////////////////////////////////////////////////////
 // ENDOF SETTINGS    ///////////////////////////////////////////////
 
@@ -203,8 +205,10 @@ function UpdateUserDataOnHTML(HtmlElemId){
 	var InfoParag = document.createElement("p");
 		InfoParag.innerHTML = "LoggedIn: " + CurrentUser;
 		InfoParag.setAttribute('class',"infobox");
-
+		InfoParag.id = TestCheckElem;
+    
 		MainDiv.appendChild(InfoParag);
+    
 
 	var LogoutDiv = document.createElement("div");
 
