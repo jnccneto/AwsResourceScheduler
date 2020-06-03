@@ -175,7 +175,7 @@ jobs:
       run: |   
             npm i puppeteer
             npm install --save-dev jest
-            jest DashBoard/jest/dasboard.spec.js
+            node_modules/jest/bin/jest.js DashBoard/jest/dasboard.spec.js
     - name: Run Jest
       uses: stefanoeb/jest-action@1.0.2
       with:
