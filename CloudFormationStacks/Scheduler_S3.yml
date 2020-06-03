@@ -1,10 +1,5 @@
 AWSTemplateFormatVersion: "2010-09-09"
-Description: "S3 DashBoard"
-Parameters:
-  StackRef:
-    Description: Fargate Cluster Stack Name
-    Type: String
-    
+Description: "S3 DashBoard"   
 Resources:
  DashBoardBucket:
      Type: AWS::S3::Bucket
