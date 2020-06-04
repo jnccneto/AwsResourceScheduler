@@ -39,6 +39,7 @@ rds_session = boto3.client('rds')
 
 ## SETTINGS ############################################
 SchedulerFlagTagName = 'Scheduler:Flag'
+SchedulerFlagTagNameOk = 'Exec'
 SchedulerTimingsTagName = 'Scheduler:Timings'
 SchedulerWeekDaysTagName = 'Scheduler:WeekDays'
 SchedulerOverRideTagName = 'Scheduler:OverRide'
@@ -221,40 +222,43 @@ def ProcessTags(TagsIn):
 ## EC2 #################################################################
 ########################################################################
 def GetAllEc2Instances():
-	EcList = ec2_session.describe_instances(
-		Filters=[
-				{
-					'Name': 'tag-key',
-					'Values': [SchedulerFlagTagName]
-				},
-				{
-					'Name': 'tag-value',
-					'Values': ['true']
-				}
-		]
-	)
-
+	ec2_list = ec2_session.get_paginator('describe_instances')
 	Ec2InfoToReturn = []
-	for Instance in EcList['Reservations']:
-		if Debug is True:
-			pprint.pprint(Instance)
-			
-		InstanceInfo = {'ResourceType':'ec2','resourceId':Instance['Instances'][0]['InstanceId']}
-		InstanceInfo['CurrentState'] = Instance['Instances'][0]['State']['Name']
-		
-		if('Tags' in Instance['Instances'][0]):
-			InstanceInfoFromTags = ProcessTags(Instance['Instances'][0]['Tags'])
-			InstanceInfo.update(InstanceInfoFromTags)
-		else:
-			InstanceInfo.update({'Schedule':False})
-		if Debug is True:
-			InstanceInfo['TAGS'] = []
-			if('Tags' in Instance['Instances'][0]):
-				for Tag in Instance['Instances'][0]['Tags']:
-					InstanceInfo['TAGS'].append({Tag['Key']:Tag['Value']})
 
-		Ec2InfoToReturn.append(InstanceInfo)
-		#pprint.pprint(Instance['Instances'])
+	for page in ec2_list.paginate(
+			Filters=[
+					{
+						'Name': 'tag-key',
+						'Values': [SchedulerFlagTagName]
+					},
+					{
+						'Name': 'tag-value',
+						'Values': [SchedulerFlagTagNameOk]
+					}
+			]		
+	):
+			for res in page['Reservations']:
+					for Instance in res['Instances']:
+							#print( Instance['InstanceId'])
+							if Debug is True:
+								pprint.pprint(Instance)
+								
+							InstanceInfo = {'ResourceType':'ec2','resourceId':Instance['InstanceId']}
+							InstanceInfo['CurrentState'] = Instance['State']['Name']
+							
+							if('Tags' in Instance):
+								InstanceInfoFromTags = ProcessTags(Instance['Tags'])
+								InstanceInfo.update(InstanceInfoFromTags)
+							else:
+								InstanceInfo.update({'Schedule':False})
+							if Debug is True:
+								InstanceInfo['TAGS'] = []
+								if('Tags' in Instance):
+									for Tag in Instance['Tags']:
+										InstanceInfo['TAGS'].append({Tag['Key']:Tag['Value']})
+					
+							Ec2InfoToReturn.append(InstanceInfo)
+							#pprint.pprint(Instance['Instances'])
 	return Ec2InfoToReturn
 
 
@@ -344,35 +348,38 @@ def StopTerminateEc2(resourceId):
 ## RDS #################################################################
 ########################################################################
 def GetAllRdsInstances():
-	RdsList = rds_session.describe_db_instances()
-	
 	RdsInfoToReturn = []
-	for Instance in RdsList['DBInstances']:
+	ec2_list = rds_session.get_paginator('describe_db_instances')
 
-		if Debug is True:
-			pprint.pprint(Instance)
-			
-		InstanceInfo = {'ResourceType':'rds','resourceId':Instance['DbiResourceId']}
-		InstanceInfo['CurrentState'] = Instance['DBInstanceStatus']
-		InstanceInfo['ResourceArn'] = Instance['DBInstanceArn']
-		InstanceInfo['DBInstanceIdentifier'] = Instance['DBInstanceIdentifier']
-		InstanceInfo['CurrentState'] = Instance['DBInstanceStatus']
-		Tags = rds_session.list_tags_for_resource(ResourceName=Instance['DBInstanceArn'])['TagList']
-		
-		if len(Tags) > 0:
-			InstanceInfoFromTags = ProcessTags(Tags)
-			InstanceInfo.update(InstanceInfoFromTags)
-		else:
-			InstanceInfo.update({'Schedule':False})
-		if Debug is True:
-			InstanceInfo['TAGS'] = []
-			if('Tags' in Instance):
-				for Tag in Instance['Instances'][0]['Tags']:
-					InstanceInfo['TAGS'].append({Tag['Key']:Tag['Value']})
+	for page in ec2_list.paginate():
+	
+			for Instance in page['DBInstances']:
+				#print(Instance['DbiResourceId'])
+				if Debug is True:
+					pprint.pprint(Instance)
+					
+				InstanceInfo = {'ResourceType':'rds','resourceId':Instance['DbiResourceId']}
+				InstanceInfo['CurrentState'] = Instance['DBInstanceStatus']
+				InstanceInfo['ResourceArn'] = Instance['DBInstanceArn']
+				InstanceInfo['DBInstanceIdentifier'] = Instance['DBInstanceIdentifier']
+				InstanceInfo['CurrentState'] = Instance['DBInstanceStatus']
+				Tags = rds_session.list_tags_for_resource(ResourceName=Instance['DBInstanceArn'])['TagList']
+				#pprint.pprint(Tags)
 
-		InstanceInfo['ResourceName'] = Instance['DBInstanceIdentifier']
 
-		RdsInfoToReturn.append(InstanceInfo)
+				if any(d['Key'] == SchedulerFlagTagName and d['Value'] == SchedulerFlagTagNameOk for d in Tags):
+						#print('Exists!')					
+						InstanceInfoFromTags = ProcessTags(Tags)
+						InstanceInfo.update(InstanceInfoFromTags)
+						
+						if Debug is True:
+							InstanceInfo['TAGS'] = []
+							if('Tags' in Instance):
+								for Tag in Instance['Instances'][0]['Tags']:
+									InstanceInfo['TAGS'].append({Tag['Key']:Tag['Value']})
+				
+						InstanceInfo['ResourceName'] = Instance['DBInstanceIdentifier']
+						RdsInfoToReturn.append(InstanceInfo)
 	return RdsInfoToReturn
 
 def GetRdsArn(resourceId):
@@ -456,14 +463,29 @@ def StopRds(resourceId):
 
 ## AutoScallingGroups ##################################################
 ########################################################################
-
+    
 def GetAutoScallingGroups(GroupId):
 	
 	if GroupId is "All":
-		AsGroups = autoscaling_sessions.describe_auto_scaling_groups()	
+   
+		paginator = autoscaling_sessions.get_paginator('describe_auto_scaling_groups')
+		page_iterator = paginator.paginate(
+				PaginationConfig={'PageSize': 100}
+		)
+		filtered_asgs = page_iterator.search(
+				'AutoScalingGroups[] | [?contains(Tags[?Key==`{}`].Value, `{}`)]'.format(SchedulerFlagTagName, SchedulerFlagTagNameOk)
+		)
+		AsGroups = {}
+		AsGroups['AutoScalingGroups'] = []
+
+		for asg in filtered_asgs:
+				#print (asg['AutoScalingGroupName'])
+				AsGroups['AutoScalingGroups'].append(asg)
+
+		#pprint.pprint(AsGroups)
+
 	else:
 		AsGroups = autoscaling_sessions.describe_auto_scaling_groups(AutoScalingGroupNames=[GroupId])
- 
 
 	AsGroupsInfoToReturn = []
 	for AsGrp in AsGroups['AutoScalingGroups']:

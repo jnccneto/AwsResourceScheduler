@@ -14,19 +14,15 @@ def lambda_handler(event, context):
 		if event['resource'] == '/list':
 			print("List ####################################")
 			
-			
+			AsGroupsInfo = Scheduler_Functions.GetAutoScallingGroups("All")
+	
 			RdsInfo = Scheduler_Functions.GetAllRdsInstances()
-			RdsInfoFiltered = [d for d in RdsInfo if d['Schedule'] in ['True','true']]
 
 			Ec2Info = Scheduler_Functions.GetAllEc2Instances()
-			Ec2InfoFiltered = [d for d in Ec2Info if d['Schedule'] in ['True','true'] and d['CurrentState'] != "terminated" ]
-
-			AsGroupsInfo = Scheduler_Functions.GetAutoScallingGroups("All")
-			AsGroupsFiltered = [d for d in AsGroupsInfo if d['Schedule'] in ['True','true']]
-
+     
 			DayTimeOnService = Scheduler_Functions.GetDayTime()
-			ResourcesInfo = AsGroupsFiltered + Ec2InfoFiltered + RdsInfoFiltered + [DayTimeOnService]
-			
+			#ResourcesInfo = AsGroupsFiltered + Ec2InfoFiltered + RdsInfoFiltered + [DayTimeOnService]
+			ResourcesInfo = AsGroupsInfo + Ec2Info + RdsInfo
 			
 			if OnAws == False:
 				pprint.pprint(ResourcesInfo)
