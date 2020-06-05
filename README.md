@@ -72,8 +72,8 @@ TAGS:
         Value: "Resource Project Group Used in DashBoard for grouping resources"
 
         Key: "Scheduler:Flag"
-        Value: True|False 
-        If True Resources is managed by Scheduler. If False or non existant, no action is taken
+        Value: Exec|False 
+        If Exec Resources is managed by Scheduler. If False or non existant, no action is taken
 
         Key: "Scheduler:Timings"
         Value: "0600:2000"
@@ -111,7 +111,7 @@ AWS::AutoScaling::AutoScalingGroup TAGS
         PropagateAtLaunch: True 
       - 
         Key: "Scheduler:Flag"
-        Value: True
+        Value: Exec
         PropagateAtLaunch: True      
       - 
         Key: "Scheduler:Timings"
@@ -140,7 +140,7 @@ AWS::EC2::Instance TAGS
         Value: "App_Ec2Only,App2_NightShift"
       - 
         Key: "Scheduler:Flag"
-        Value: True
+        Value: Exec
       -         
         Key: "Scheduler:Timings"
         Value: "2000:0600"
@@ -165,7 +165,7 @@ AWS::RDS::DBInstance TAGS
         Value: "App1_DayShift"
       - 
         Key: "Scheduler:Flag"
-        Value: True
+        Value: Exec
       -         
         Key: "Scheduler:Timings"
         Value: "0600:2000"
