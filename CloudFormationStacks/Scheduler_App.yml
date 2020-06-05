@@ -25,7 +25,7 @@ Resources:
  LambdaSchedulerPolicyAddTags:
     Type: 'AWS::IAM::ManagedPolicy'
     Properties:
-      ManagedPolicyName: RdsAddTags
+      ManagedPolicyName: UpdateTags
       Roles:
        - !Ref LambdaSchedulerApiFnRole
        - !Ref LambdaSchedulerExecFnRole       
@@ -40,7 +40,7 @@ Resources:
               Resource: "*"
               Condition:
                  StringEquals:
-                   "rds:db-tag/Scheduler:Flag": "true"  
+                   "rds:db-tag/Scheduler:Flag": "Exec"  
             - Effect: Allow
               Action: 
                 - ec2:CreateTags
@@ -48,7 +48,7 @@ Resources:
               Resource: "*"
               Condition:
                  StringEquals:
-                   "ec2:ResourceTag/Scheduler:Flag": "true"   
+                   "ec2:ResourceTag/Scheduler:Flag": "Exec"   
             - Effect: Allow
               Action: 
               Action: 
@@ -58,7 +58,7 @@ Resources:
               Resource: "*"
               Condition:
                  StringEquals:
-                   "autoscaling:ResourceTag/Scheduler:Flag": "true"  
+                   "autoscaling:ResourceTag/Scheduler:Flag": "Exec"  
 
  LambdaSchedulerExecFnRole:
     Type: AWS::IAM::Role
@@ -95,7 +95,7 @@ Resources:
               Resource: "*"
               Condition:
                  StringEquals:
-                   "ec2:ResourceTag/Scheduler:Flag": "true"     
+                   "ec2:ResourceTag/Scheduler:Flag": "Exec"     
 
 
  LambdaSchedulerExecStartStopPolicyRDS:
@@ -118,7 +118,7 @@ Resources:
               Resource: "*"
               Condition:
                  StringEquals:
-                   "rds:db-tag/Scheduler:Flag": "true"  
+                   "rds:db-tag/Scheduler:Flag": "Exec"  
                    
 
  LambdaSchedulerExecStartStopPolicyAsGrp:
@@ -138,7 +138,7 @@ Resources:
               Resource: "*"
               Condition:
                  StringEquals:
-                   "autoscaling:ResourceTag/Scheduler:Flag": "true"  
+                   "autoscaling:ResourceTag/Scheduler:Flag": "Exec"  
                                                           
 #####################################################
 ## LAMBDA
