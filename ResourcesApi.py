@@ -21,8 +21,7 @@ def lambda_handler(event, context):
 			Ec2Info = Scheduler_Functions.GetAllEc2Instances()
      
 			DayTimeOnService = Scheduler_Functions.GetDayTime()
-			#ResourcesInfo = AsGroupsFiltered + Ec2InfoFiltered + RdsInfoFiltered + [DayTimeOnService]
-			ResourcesInfo = AsGroupsInfo + Ec2Info + RdsInfo
+			ResourcesInfo = AsGroupsInfo + Ec2Info + RdsInfo + [DayTimeOnService]
 			
 			if OnAws == False:
 				pprint.pprint(ResourcesInfo)
