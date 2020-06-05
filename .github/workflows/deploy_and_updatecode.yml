@@ -106,6 +106,9 @@ jobs:
         echo "LayerName: ${LayerName}"
         NewVersionNumber=$(aws lambda publish-layer-version --layer-name $LayerName --content S3Bucket=$BucketName,S3Key=SchedulerFunctions.zip --compatible-runtimes python3.6 python3.7 | awk '/"Version":/ {print $2}' | sed 's/,//')
         echo "NewVersionNumber: ${NewVersionNumber}"
+        LayerArnNoVersion=$(echo $LayerArn | cut --fields=1,2,3,4,5,6,7 --delimiter=: )
+        echo "LayerArnNoVersion: ${LayerArnNoVersion}"        
+        1,2,3,4,5,6,7
         aws lambda update-function-code --function-name ResourcesApi --s3-bucket $BucketName --s3-key ResourcesApi.zip
         aws lambda update-function-code --function-name SchedulerCheckAndApply --s3-bucket $BucketName --s3-key SchedulerCheckAndApply.zip
         aws lambda update-function-configuration --function-name SchedulerCheckAndApply --layers "${LayerArn}:${NewVersionNumber}"
