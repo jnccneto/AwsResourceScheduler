@@ -591,7 +591,10 @@ def StopAutoScallingGroup(resourceId):
 	return ProcessAwsReply(response)
 
 def UpDateAutoScallingGroupSchedule(resourceId,ScheduleTimings,ScheduleDays,OverRide):
+	print("UpDateAutoScallingGroupSchedule resourceId :", resourceId )  
 	AsGrpIdInfo = GetAutoScallingGroups(resourceId)
+	print("AsGrpIdInfo :")  
+	print(AsGrpIdInfo)
 	print("AsGrpIdInfon InstanceId :", AsGrpIdInfo[0]['instances_ids'] )
 	for Instance in AsGrpIdInfo[0]['instances_ids']:
 		UpdateEc2Schedule(Instance,ScheduleTimings,ScheduleDays,OverRide)
