@@ -99,7 +99,8 @@ jobs:
       run: |     
         BucketName=$(aws cloudformation list-exports --query "Exports[?Name=='CodeSourceBucketName'].Value" --no-paginate --output text )
         echo "BucketName $BucketName"
-        LayerArn=$(aws cloudformation list-exports --query "Exports[?Name=='SchedulerFunctionsLayerARN'].Value" --no-paginate --output text | cut --delimiter=: --fields=1,2,3,4,5,6,7 )
+        #LayerArn=$(aws cloudformation list-exports --query "Exports[?Name=='SchedulerFunctionsLayerARN'].Value" --no-paginate --output text | cut --delimiter=: --fields=1,2,3,4,5,6,7 )
+        LayerArn=$(aws cloudformation list-exports  | grep -A 3 "ExportingStackId.*/Scheduler-App/" | grep -A 1 -B 1 SchedulerFunctionsLayerARN | sed -n 's/"Value": .*"\([a-zA-Z0-9:-]\+\)"/\1/p' | sed 's/ *//g' | sed 's/,//g')       
         echo "LayerArn: ${LayerArn}"
         LayerName=$(echo $LayerArn | cut --fields=7 --delimiter=: )
         echo "LayerName: ${LayerName}"
