@@ -84,7 +84,7 @@ var AsGroupType = "AsGrp"
 var Ec2Type = "ec2"
 var RdsType = "rds"
 
-var CognitoWebClientId = '66mebtc4uqsu83rfnk72avfe9'
+var CognitoWebClientId = '5o1mu97onagcunmtbl2vcvoplt'
 var apigClient = apigClientFactory.newClient();
 var RefreshMsSecs = 6500000 //milliseconds
 
@@ -164,7 +164,6 @@ function CheckSignedStatus() {
 				.catch(function(Out) {
 						console.log('listGet Error')
 						console.log(Out)
-						debugger
 						alert("Resource List Access Errors, Login Expired? Logout and ReLogin")
 					})
 					
@@ -225,8 +224,18 @@ function UpdateUserDataOnHTML(HtmlElemId){
 					})
 				.catch(function(Out) {CheckSignedStatus();})
 				} 
-		LogoutDiv.appendChild(button);
-		MainDiv.appendChild(LogoutDiv);
+
+    var UpdatePassWdButton = document.createElement("input"); 
+        UpdatePassWdButton.setAttribute('type',"submit");
+        UpdatePassWdButton.setAttribute('value',"NewPasswd");
+        UpdatePassWdButton.setAttribute('class',"btn");
+        UpdatePassWdButton.onclick=function() {MakeChangePasswdFormOnHTML("UserStatus"); }
+        
+                
+        LogoutDiv.appendChild(button);
+        MainDiv.appendChild(LogoutDiv);
+        MainDiv.appendChild(UpdatePassWdButton);
+    
 	}
 	
 function UpdateStatus(HtmlElemId){
@@ -284,16 +293,74 @@ function MakeLoginFormOnHTML(HtmlElemId){
 					})
 				.catch(function(Out) {CheckSignedStatus();})
 				} 
-		
-		LoginDiv.appendChild(username);
-		LoginDiv.appendChild(password);
-		BtnDiv.appendChild(button);
-		MainDiv.appendChild(LoginDiv);
-				MainDiv.appendChild(BtnDiv);
+        
+
+        		
+        LoginDiv.appendChild(username);
+        LoginDiv.appendChild(password);
+        BtnDiv.appendChild(button);
+        MainDiv.appendChild(LoginDiv);
+        MainDiv.appendChild(BtnDiv);       
 
 }
 		
 
+
+
+function MakeChangePasswdFormOnHTML(HtmlElemId){
+		
+	var MainDiv = document.getElementById(HtmlElemId);
+		while (MainDiv.firstChild) {
+			MainDiv.removeChild(MainDiv.firstChild);
+		}
+
+	var ChangePasswdDiv = document.createElement("div");
+	var oldpassword = document.createElement("input"); 
+      oldpassword.setAttribute('type',"oldpassword");
+      oldpassword.setAttribute('name',"oldpassword");
+      oldpassword.setAttribute('id',"oldpassword");
+      oldpassword.setAttribute('class',"infobox");
+	var newpassword = document.createElement("input"); 
+      newpassword.setAttribute('type',"newpassword");
+      newpassword.setAttribute('name',"newpassword");
+      newpassword.setAttribute('id',"newpassword");
+      newpassword.setAttribute('class',"infobox");
+	var BtnDiv = document.createElement("div");
+
+	var button = document.createElement("input"); 
+      button.setAttribute('type',"submit");
+      button.setAttribute('value',"Update");
+      button.setAttribute('class',"btn");
+
+		
+		button.onclick=function() {
+			this.value = "Wait";
+      
+      
+     AuthFnGlobal.currentAuthenticatedUser().then(user => {
+        console.log(user); 
+        AuthFnGlobal.changePassword(user,document.getElementById('oldpassword').value,document.getElementById('newpassword').value)
+				.then(function(Out) {
+          console.log(Out); 
+       		UpdateUserDataOnHTML("UserStatus");
+					alert(Out);
+					})
+				.catch(function(Out) {
+           console.log(Out); 
+          })
+    })
+  }
+
+		ChangePasswdDiv.appendChild(oldpassword);
+		ChangePasswdDiv.appendChild(newpassword);
+		BtnDiv.appendChild(button);
+		MainDiv.appendChild(ChangePasswdDiv);
+    MainDiv.appendChild(BtnDiv);
+
+}
+	
+  
+  
 function GetResourceList(){
 		return new Promise(function(resolve, reject){
 			apigClient.listGet(undefined,undefined,ApiGwAuthHeaders)
