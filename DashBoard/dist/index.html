@@ -211,20 +211,21 @@ function UpdateUserDataOnHTML(HtmlElemId){
 		}
 		//MainDiv.setAttribute('class',"box");
 
+     
 	var InfoParag = document.createElement("p");
-		InfoParag.innerHTML = "LoggedIn: " + CurrentUser;
-		InfoParag.setAttribute('class',"infobox");
-		InfoParag.id = TestCheckElem;
-    
-		MainDiv.appendChild(InfoParag);
+      InfoParag.innerHTML = "LoggedIn: " + CurrentUser;
+      InfoParag.setAttribute('class',"infolabel");
+      InfoParag.id = TestCheckElem;  
+  
+  MainDiv.appendChild(InfoParag);
     
 
 	var LogoutDiv = document.createElement("div");
 
 	var button = document.createElement("input"); 
-		button.setAttribute('type',"submit");
-		button.setAttribute('value',"Logout");
-		button.setAttribute('class',"btn");
+      button.setAttribute('type',"submit");
+      button.setAttribute('value',"Logout");
+      button.setAttribute('class',"btn");
 
 		button.onclick=function() {
 			
@@ -254,12 +255,12 @@ function UpdateStatus(HtmlElemId){
 	var InfoDiv = document.createElement("div");
 
 	var InfoParag = document.createElement("p");
-		InfoParag.id="ServiceStatus"
-		InfoParag.innerHTML = "Current Day: " + CurrentDayTime.Day + " Time: " + CurrentDayTime.Time;
-		InfoParag.setAttribute('class',"infobox");
-		InfoParag.style.cssFloat = "right";
-		InfoDiv.appendChild(InfoParag);
-		MainDiv.appendChild(InfoDiv);
+      InfoParag.id="ServiceStatus"
+      InfoParag.innerHTML = "Current Day: " + CurrentDayTime.Day + " Time: " + CurrentDayTime.Time;
+      InfoParag.setAttribute('class',"infobox");
+      InfoParag.style.cssFloat = "right";
+      InfoDiv.appendChild(InfoParag);
+      MainDiv.appendChild(InfoDiv);
 	}
 	
 	
