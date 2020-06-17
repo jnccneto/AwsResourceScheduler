@@ -1,4 +1,4 @@
-# AWS Scheduler Info
+# AWS Scheduler Info  
 
 Is an Application to automate and manage the start/stop of AWS Resources (EC2 | AsGroups |  RDS )
 
