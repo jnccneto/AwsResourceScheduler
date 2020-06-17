@@ -1,22 +1,17 @@
 {
-  "name": "aws scheduler dashboard",
+  "name": "dashboard",
   "version": "1.0.0",
-  "description": "",
-  "private": true,
+  "description": "aws scheduler dashboard",
+  "main": "webpack.config.js",
+  "dependencies": {
+    "aws-amplify": "^3.0.17",
+    "webpack": "^4.43.0",
+    "webpack-cli": "^3.3.11"
+  },
+  "devDependencies": {},
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
-  "devDependencies": {
-    "webpack": "^4.20.2",
-    "webpack-cli": "^3.1.2"
-  },
-  "dependencies": {
-    "aws-amplify": "^2.2.1",
-    "jest": "^26.0.1",
-    "lodash": "^4.17.15",
-    "puppeteer": "^4.0.0"
-  }
+  "author": "jose neto",
+  "license": "MIT"
 }
