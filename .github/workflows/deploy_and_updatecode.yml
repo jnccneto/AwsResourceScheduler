@@ -164,6 +164,7 @@ jobs:
             grep -r userPool DashBoard/src/
             grep "CognitoWebClientId ="  DashBoard/dist/index.html             
             cd DashBoard
+            npm install
             npx webpack
             DashBoardBucketName=$(aws cloudformation list-exports --query "Exports[?Name=='DashBoardBucketName'].Value" --no-paginate --output text )
             echo "DashBoardBucketName: $DashBoardBucketName"
