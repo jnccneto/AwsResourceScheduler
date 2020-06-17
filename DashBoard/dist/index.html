@@ -273,19 +273,25 @@ function MakeLoginFormOnHTML(HtmlElemId){
 
 	var LoginDiv = document.createElement("div");
 
-		
+	var userP = document.createElement("p"); 
+      userP.setAttribute('class',"infolabel"); 
+      userP.innerText="username";
+ 	
 	var username = document.createElement("input"); 
-		username.setAttribute('type',"text");
-		username.setAttribute('name',"username");
-		username.setAttribute('value',"username");
-		username.setAttribute('id',"username");
-		username.setAttribute('class',"infobox");
+      username.setAttribute('type',"text");
+      username.setAttribute('name',"username");
+      username.setAttribute('id',"username");
+      username.setAttribute('class',"infobox");
 
+	var PasswdP = document.createElement("p"); 
+      PasswdP.setAttribute('class',"infolabel"); 
+      PasswdP.innerText="password";
+      
 	var password = document.createElement("input"); 
-		password.setAttribute('type',"password");
-		password.setAttribute('name',"password");
-		password.setAttribute('id',"password");
-		password.setAttribute('class',"infobox");
+      password.setAttribute('type',"password");
+      password.setAttribute('name',"password");
+      password.setAttribute('id',"password");
+      password.setAttribute('class',"infobox");
 
 	var BtnDiv = document.createElement("div");
 
@@ -304,8 +310,9 @@ function MakeLoginFormOnHTML(HtmlElemId){
 				} 
         
 
-        		
+        LoginDiv.appendChild(userP);        		
         LoginDiv.appendChild(username);
+        LoginDiv.appendChild(PasswdP);        
         LoginDiv.appendChild(password);
         BtnDiv.appendChild(button);
         MainDiv.appendChild(LoginDiv);
@@ -324,13 +331,19 @@ function MakeChangePasswdFormOnHTML(HtmlElemId){
 		}
 
 	var ChangePasswdDiv = document.createElement("div");
+	var oldPasswdP = document.createElement("p"); 
+      oldPasswdP.setAttribute('class',"infolabel"); 
+      oldPasswdP.innerText="oldpassword";  
 	var oldpassword = document.createElement("input"); 
-      oldpassword.setAttribute('type',"oldpassword");
+      oldpassword.setAttribute('type',"password");
       oldpassword.setAttribute('name',"oldpassword");
       oldpassword.setAttribute('id',"oldpassword");
       oldpassword.setAttribute('class',"infobox");
+	var newPasswdP = document.createElement("p"); 
+      newPasswdP.setAttribute('class',"infolabel"); 
+      newPasswdP.innerText="newpassword";        
 	var newpassword = document.createElement("input"); 
-      newpassword.setAttribute('type',"newpassword");
+      newpassword.setAttribute('type',"password");
       newpassword.setAttribute('name',"newpassword");
       newpassword.setAttribute('id',"newpassword");
       newpassword.setAttribute('class',"infobox");
@@ -361,8 +374,9 @@ function MakeChangePasswdFormOnHTML(HtmlElemId){
           })
     })
   }
-
+		ChangePasswdDiv.appendChild(oldPasswdP);
 		ChangePasswdDiv.appendChild(oldpassword);
+		ChangePasswdDiv.appendChild(newPasswdP);
 		ChangePasswdDiv.appendChild(newpassword);
 		BtnDiv.appendChild(button);
 		MainDiv.appendChild(ChangePasswdDiv);
