@@ -104,7 +104,7 @@ def CheckDesiredState(TimeIn,daysActiveIn):
 		#print("TimeIn Macth OK")
 		TimeInCheck = True
 	else:
-		print("TimeIn No Macth",TimeIn)
+		print("TimeIn Format Error (TimeIn_regex) ",TimeIn,TimeIn_regex)
 
 	daysActiveIn_regex = r"[a-z]{3}" + re.escape(WeekDaysSeparator) + r"[a-z]{3}\b"
 	if re.search(daysActiveIn_regex, daysActiveIn): 
@@ -115,14 +115,14 @@ def CheckDesiredState(TimeIn,daysActiveIn):
 				#print("daysActiveIn OK: ",DayToCheck)
 				daysActiveInCheck = True
 			else:
-				print("daysActiveIn Errors",daysActiveIn)
+				print("daysActiveIn Format Error: ",daysActiveIn,daysActiveIn_regex)
 	else:
 		#print("daysActiveIn Single Value")
 		if daysActiveIn in WeekDaysValidateList:
 			#print("daysActiveIn OK")
 			daysActiveInCheck = True
 		else:
-			print("daysActiveIn Errors",daysActiveIn)
+			print("daysActiveIn Format Error:",daysActiveIn,daysActiveIn_regex)
 			daysActiveInCheck = False
 
 	if Debug is True:
@@ -339,6 +339,22 @@ def StopTerminateEc2(resourceId):
 		]
 	)	
 	return ProcessAwsReply(response)
+
+def CheckIfEc2Exists(Ec2Id):
+	response = ec2_session.describe_instances(
+			Filters=[
+					{
+							'Name': 'instance-id',
+							'Values': [Ec2Id]
+					},
+			],
+	)
+	if(len(response['Reservations']) > 0):
+		Ec2Status = True
+	else:
+		Ec2Status = False
+	return Ec2Status
+
 
 
 ## EndofEC2 ############################################################
@@ -593,31 +609,37 @@ def StopAutoScallingGroup(resourceId):
 def UpDateAutoScallingGroupSchedule(resourceId,ScheduleTimings,ScheduleDays,OverRide):
 	print("UpDateAutoScallingGroupSchedule resourceId :", resourceId )  
 	AsGrpIdInfo = GetAutoScallingGroups(resourceId)
+	
 	print("AsGrpIdInfo :")  
 	print(AsGrpIdInfo)
-	print("AsGrpIdInfon InstanceId :", AsGrpIdInfo[0]['instances_ids'] )
+	print("AsGrpIdInfo InstanceId :", AsGrpIdInfo[0]['instances_ids'] )
 	for Instance in AsGrpIdInfo[0]['instances_ids']:
-		UpdateEc2Schedule(Instance,ScheduleTimings,ScheduleDays,OverRide)
+		## Check if instace exists 
+		if CheckIfEc2Exists(Instance) is True:
+			UpdateEc2Schedule(Instance,ScheduleTimings,ScheduleDays,OverRide)
 		
-	response = autoscaling_sessions.create_or_update_tags(
-		Tags=[
-			{
-				'Key': SchedulerTimingsTagName,
-				'Value': ScheduleTimings,
-				'PropagateAtLaunch': True,
-				'ResourceId': resourceId,
-				'ResourceType': 'auto-scaling-group',
-			},
-			{
-				'Key': SchedulerWeekDaysTagName,
-				'Value': ScheduleDays,
-				'PropagateAtLaunch': True,
-				'ResourceId': resourceId,
-				'ResourceType': 'auto-scaling-group',
-			}
-		]
-	)
-	return ProcessAwsReply(response)
+			response = autoscaling_sessions.create_or_update_tags(
+				Tags=[
+					{
+						'Key': SchedulerTimingsTagName,
+						'Value': ScheduleTimings,
+						'PropagateAtLaunch': True,
+						'ResourceId': resourceId,
+						'ResourceType': 'auto-scaling-group',
+					},
+					{
+						'Key': SchedulerWeekDaysTagName,
+						'Value': ScheduleDays,
+						'PropagateAtLaunch': True,
+						'ResourceId': resourceId,
+						'ResourceType': 'auto-scaling-group',
+					}
+				]
+			)
+			FeedBack=ProcessAwsReply(response)
+		else:
+			FeedBack=False
+	return FeedBack
 
 ## EndOfAutoScallingGroups ##################################################
 #############################################################################
@@ -676,16 +698,17 @@ def StopResource(resourceId,ResourceType):
 
 
 def CheckScheduleOverRide(OverRideIn):
-	OverRideIn_regex = r"[0-9]{2}-[0-9]{2}-[0-9]{4}"
-	if re.search(OverRideIn_regex, OverRideIn):
-		print("OverRideIn:", OverRideIn, "RegEx OK")
-		if datetime.datetime.strptime(OverRideIn, '%d-%m-%Y') > datetime.datetime.now():
-			print("OverRideIn After Today:")
-			return True
-		else:
-			print("OverRideIn Before or Today:")
-		return False
-	return False
+  if(OverRideIn is not None):
+    OverRideIn_regex = r"[0-9]{2}-[0-9]{2}-[0-9]{4}"
+    if re.search(OverRideIn_regex, OverRideIn):
+      print("OverRideIn:", OverRideIn, "RegEx OK")
+      if datetime.datetime.strptime(OverRideIn, '%d-%m-%Y') > datetime.datetime.now():
+        print("OverRideIn After Today:")
+        return True
+      else:
+        print("OverRideIn Before or Today:")
+      return False
+  return False
 
 
 
