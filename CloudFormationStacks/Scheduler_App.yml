@@ -146,8 +146,7 @@ Resources:
 
  SchedulerFunctionsLayer:
   Type: AWS::Lambda::LayerVersion
-  DependsOn:
-   - SchedulerCheckAndApplyLogGroup  
+  #DependsOn: SchedulerCheckAndApplyLogGroup  
   Properties:
     CompatibleRuntimes:
       - python3.6
