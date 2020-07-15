@@ -209,11 +209,12 @@ Resources:
      Principal: "apigateway.amazonaws.com"
      SourceArn: !Sub "arn:aws:execute-api:${AWS::Region}:${AWS::AccountId}:${apiGateway}/*/GET/updateschedule"
 
- SchedulerCheckAndApplyLogGroup:
-  Type: AWS::Logs::LogGroup
-  Properties: 
-    LogGroupName: /aws/lambda/SchedulerCheckAndApply
-    RetentionInDays: 14
+# To Add, Needs Gitactions Permissions
+# SchedulerCheckAndApplyLogGroup:
+#  Type: AWS::Logs::LogGroup
+#  Properties: 
+#    LogGroupName: /aws/lambda/SchedulerCheckAndApply
+#    RetentionInDays: 14
 
 
 #####################################################
