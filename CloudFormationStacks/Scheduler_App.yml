@@ -146,6 +146,8 @@ Resources:
 
  SchedulerFunctionsLayer:
   Type: AWS::Lambda::LayerVersion
+  DependsOn:
+   - SchedulerCheckAndApplyLogGroup  
   Properties:
     CompatibleRuntimes:
       - python3.6
@@ -206,6 +208,12 @@ Resources:
      FunctionName: !GetAtt "ResourcesApi.Arn"
      Principal: "apigateway.amazonaws.com"
      SourceArn: !Sub "arn:aws:execute-api:${AWS::Region}:${AWS::AccountId}:${apiGateway}/*/GET/updateschedule"
+
+ SchedulerCheckAndApplyLogGroup:
+  Type: AWS::Logs::LogGroup
+  Properties: 
+    LogGroupName: /aws/lambda/SchedulerCheckAndApply
+    RetentionInDays: 14
 
 
 #####################################################
