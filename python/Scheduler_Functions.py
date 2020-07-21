@@ -30,6 +30,7 @@ import dateutil.tz
 import re
 
 Debug = False
+DebugTime = True
 
 ec2_session = boto3.client('ec2')
 autoscaling_sessions = boto3.client('autoscaling')
@@ -172,13 +173,8 @@ def CheckDesiredState(TimeIn,daysActiveIn):
 			isActiveTime = True
 		
 		
-		if Debug is True:
-			print("daysActiveIn: ",daysActiveIn )
-			print("isActiveDay: ",isActiveDay )
-			print("startTime ",startTimeIn)
-			print("stopTime ",stopTimeIn)
-			print("str(now) ",str(now))
-			print("isActiveTime ",isActiveTime)
+		if DebugTime is True:
+			print("daysActiveIn: ",daysActiveIn,"isActiveDay: ",isActiveDay,"startTime ",startTimeIn,"stopTime ",stopTimeIn,"str(now) ",str(now),"isActiveTime ",isActiveTime)
 						
 		if  isActiveTime == False or ( isActiveTime == True and isActiveDay == False):
 			return "stopped"
