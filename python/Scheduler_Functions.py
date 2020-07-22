@@ -70,9 +70,15 @@ ResourceTypeEc2 = "ec2"
 ResourceTypeAsGroup = "AsGrp"
 ResourceTypeRDS = "rds"
 
-Luxembourg = dateutil.tz.gettz('Europe/Luxembourg')
-now = datetime.datetime.now(tz=Luxembourg).strftime("%H%M")
+TzFile = dateutil.tz.gettz('Europe/Luxembourg')
+now = datetime.datetime.now(tz=TzFile).strftime("%H%M")
 nowDay = datetime.datetime.today().strftime("%a").lower()
+
+if DebugTime is True:
+  print("SYSTEM TIME ", datetime.datetime.now().strftime("%H%M"))
+  print("TZ File ", TzFile)
+  print("TzFile ", datetime.datetime.now(tz=TzFile).strftime("%H%M"))
+  
 
 
 if Debug is True:
@@ -714,13 +720,9 @@ def CheckResourcesStateAndApplyChanges(ResourcesList):
 		print("\n\n")
 		print("#########################################")
 		if(Resource['Schedule'] is not None and Resource['Schedule'] is not False):
-			print("Checking Resource : ", Resource)
-			print("ID : ", Resource['resourceId'])
 			if 'ResourceName' in Resource:
 				print("ResourceName : ", Resource['ResourceName'])
-			print("ResourceType : ", Resource['ResourceType'])
-			print("CurrentState : ", Resource['CurrentState'] , "Desired State", Resource['ScheduleDesiredState'])
-			print("ScheduleOverRide : ", Resource['ScheduleOverRide'])
+			print("Resource : ", Resource,"ID : ", Resource['resourceId'],"ResourceType : ", Resource['ResourceType'],"CurrentState : ", Resource['CurrentState'] , "Desired State", Resource['ScheduleDesiredState'],"ScheduleOverRide : ", Resource['ScheduleOverRide'])
 			ResourceOverRide = CheckScheduleOverRide(Resource['ScheduleOverRide'])
 			print("CheckScheduleOverRide : ", ResourceOverRide)
 			
