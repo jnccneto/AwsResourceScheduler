@@ -75,19 +75,12 @@ now = datetime.datetime.now(tz=TzFile).strftime("%H%M")
 nowDay = datetime.datetime.today().strftime("%a").lower()
 
 if DebugTime is True:
-  print("SYSTEM TIME ", datetime.datetime.now().strftime("%H%M"))
-  print("TZ File ", TzFile)
-  print("TzFile ", datetime.datetime.now(tz=TzFile).strftime("%H%M"))
-  
-
-
-if Debug is True:
-	print(defaultStartTime,defaultStopTime)
-	print(defaultDaysActive)
-	print("time: ",now )
-	print("Day: ",nowDay )
-
-
+	print("SYSTEM TIME: ", datetime.datetime.now().strftime("%H%M"))
+	print("TZ File ", TzFile)
+	print("TzFile TIME: ", datetime.datetime.now(tz=TzFile).strftime("%H%M"))
+	print("now time: ",now )
+	print("nowDay Day: ",nowDay )
+	print("defaultStartTime",defaultStartTime,"defaultStopTime",defaultStopTime,"defaultDaysActive",defaultDaysActive)
 
 
 ## State and Timings ###################################################
