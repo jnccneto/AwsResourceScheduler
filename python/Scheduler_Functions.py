@@ -74,14 +74,6 @@ TzFile = dateutil.tz.gettz('Europe/Luxembourg')
 now = datetime.datetime.now(tz=TzFile).strftime("%H%M")
 nowDay = datetime.datetime.today().strftime("%a").lower()
 
-if DebugTime is True:
-	print("SYSTEM TIME: ", datetime.datetime.now().strftime("%H%M"))
-	print("TZ File ", TzFile)
-	print("TzFile TIME: ", datetime.datetime.now(tz=TzFile).strftime("%H%M"))
-	print("now time: ",now )
-	print("nowDay Day: ",nowDay )
-	print("defaultStartTime",defaultStartTime,"defaultStopTime",defaultStopTime,"defaultDaysActive",defaultDaysActive)
-
 
 ## State and Timings ###################################################
 ########################################################################
@@ -94,10 +86,15 @@ def CheckDesiredState(TimeIn,daysActiveIn):
 	TimeInCheck = False
 	daysActiveInCheck = False
 
-	if Debug is True:
-		print("CheckDesiredState ################## ")
-		print("TimeIn: ",TimeIn )
-		print("daysActiveIn: ",daysActiveIn )
+	if DebugTime is True:
+		print("DebugTime ##############################",)    
+		print("SYSTEM TIME: ", datetime.datetime.now().strftime("%H%M"))
+		print("TZ File ", TzFile)
+		print("TzFile TIME: ", datetime.datetime.now(tz=TzFile).strftime("%H%M"))
+		print("now time: ",now )
+		print("nowDay Day: ",nowDay )
+		print("defaultStartTime",defaultStartTime,"defaultStopTime",defaultStopTime,"defaultDaysActive",defaultDaysActive)
+	
 
 	TimeIn_regex = r"[0-9]{4}" + re.escape(TimingsSeparator) + r"[0-9]{4}\b"
 	if re.search(TimeIn_regex, TimeIn): 
