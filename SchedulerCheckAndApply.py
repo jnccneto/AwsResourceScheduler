@@ -7,8 +7,9 @@ def lambda_handler(event, context):
 	print(event)
 	if 'source' in event:
 		if event['source'] == 'aws.events':
-			print("Exec Schedukes###########################")
+			print("GetAllResourcesList###########################")
 			AllResources = Scheduler_Functions.GetAllResourcesList()
+			print("CheckResourcesStateAndApplyChanges###########################")      
 			Scheduler_Functions.CheckResourcesStateAndApplyChanges(AllResources)
         
 OnAws = True

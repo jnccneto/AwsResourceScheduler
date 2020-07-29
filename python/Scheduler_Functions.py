@@ -71,30 +71,29 @@ ResourceTypeAsGroup = "AsGrp"
 ResourceTypeRDS = "rds"
 
 TzFile = dateutil.tz.gettz('Europe/Luxembourg')
-now = datetime.datetime.now(tz=TzFile).strftime("%H%M")
-nowDay = datetime.datetime.today().strftime("%a").lower()
 
 
 ## State and Timings ###################################################
 ########################################################################
 
-
 def GetDayTime():
+	now = datetime.datetime.now(tz=TzFile).strftime("%H%M")
+	nowDay = datetime.datetime.today().strftime("%a").lower()
 	return { 'Day': nowDay, 'Time': now} 
 
 def CheckDesiredState(TimeIn,daysActiveIn):
-	TimeInCheck = False
-	daysActiveInCheck = False
-
+	now = datetime.datetime.now(tz=TzFile).strftime("%H%M")
+	nowDay = datetime.datetime.today().strftime("%a").lower()
+		
 	if DebugTime is True:
 		print("DebugTime ##############################",)    
 		print("SYSTEM TIME: ", datetime.datetime.now().strftime("%H%M"))
 		print("TZ File ", TzFile)
 		print("TzFile TIME: ", datetime.datetime.now(tz=TzFile).strftime("%H%M"))
-		print("now time: ",now )
-		print("nowDay Day: ",nowDay )
-		print("defaultStartTime",defaultStartTime,"defaultStopTime",defaultStopTime,"defaultDaysActive",defaultDaysActive)
-	
+		print("now TIME: ",now )
+			
+	TimeInCheck = False
+	daysActiveInCheck = False
 
 	TimeIn_regex = r"[0-9]{4}" + re.escape(TimingsSeparator) + r"[0-9]{4}\b"
 	if re.search(TimeIn_regex, TimeIn): 
@@ -605,32 +604,32 @@ def UpDateAutoScallingGroupSchedule(resourceId,ScheduleTimings,ScheduleDays,Over
 	print("AsGrpIdInfo :")  
 	print(AsGrpIdInfo)
 	print("AsGrpIdInfo InstanceId :", AsGrpIdInfo[0]['instances_ids'] )
-	for Instance in AsGrpIdInfo[0]['instances_ids']:
-		## Check if instace exists 
-		if CheckIfEc2Exists(Instance) is True:
-			UpdateEc2Schedule(Instance,ScheduleTimings,ScheduleDays,OverRide)
-		
-			response = autoscaling_sessions.create_or_update_tags(
-				Tags=[
-					{
-						'Key': SchedulerTimingsTagName,
-						'Value': ScheduleTimings,
-						'PropagateAtLaunch': True,
-						'ResourceId': resourceId,
-						'ResourceType': 'auto-scaling-group',
-					},
-					{
-						'Key': SchedulerWeekDaysTagName,
-						'Value': ScheduleDays,
-						'PropagateAtLaunch': True,
-						'ResourceId': resourceId,
-						'ResourceType': 'auto-scaling-group',
-					}
-				]
-			)
-			FeedBack=ProcessAwsReply(response)
-		else:
-			FeedBack=False
+	if AsGrpIdInfo[0]['instances_ids']:	
+		for Instance in AsGrpIdInfo[0]['instances_ids']:
+			## Check if instace exists 
+			if CheckIfEc2Exists(Instance) is True:
+				UpdateEc2Schedule(Instance,ScheduleTimings,ScheduleDays,OverRide)
+				
+	response = autoscaling_sessions.create_or_update_tags(
+		Tags=[
+			{
+				'Key': SchedulerTimingsTagName,
+				'Value': ScheduleTimings,
+				'PropagateAtLaunch': True,
+				'ResourceId': resourceId,
+				'ResourceType': 'auto-scaling-group',
+			},
+			{
+				'Key': SchedulerWeekDaysTagName,
+				'Value': ScheduleDays,
+				'PropagateAtLaunch': True,
+				'ResourceId': resourceId,
+				'ResourceType': 'auto-scaling-group',
+			}
+		]
+	)
+	FeedBack=ProcessAwsReply(response)
+
 	return FeedBack
 
 ## EndOfAutoScallingGroups ##################################################
