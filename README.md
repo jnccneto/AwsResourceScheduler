@@ -89,6 +89,9 @@ TAGS:
         Value: ""
         Flag to overide the normal start/stop.
         Must be set in DashBoard WebConsole and with a Date
+        Format dd-mm-yyyy
+        If this date is set and is after the current day, the app wont do any actions (start|stop) on the resource
+        Timezone is not taken in consideration
 
 
 
