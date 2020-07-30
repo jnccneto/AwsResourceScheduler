@@ -625,7 +625,14 @@ def UpDateAutoScallingGroupSchedule(resourceId,ScheduleTimings,ScheduleDays,Over
 				'PropagateAtLaunch': True,
 				'ResourceId': resourceId,
 				'ResourceType': 'auto-scaling-group',
-			}
+			},
+			{
+				'Key': SchedulerOverRideTagName,
+				'Value': OverRide,
+				'PropagateAtLaunch': True,
+				'ResourceId': resourceId,
+				'ResourceType': 'auto-scaling-group',
+			}        
 		]
 	)
 	FeedBack=ProcessAwsReply(response)
